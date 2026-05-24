@@ -22,7 +22,14 @@
       "PowerShell(npm install -D @types/react@^19 @types/react-dom@^19 --no-fund --no-audit 2>&1)",
       "PowerShell(npm run build 2>&1)",
       "PowerShell(npx --yes serve out -p 4321 -L 2>&1)",
-      "PowerShell(Start-Sleep -Seconds 2; try { $r = Invoke-WebRequest -UseBasicParsing -Uri \"http://localhost:4321/\" -TimeoutSec 5; \"STATUS: $\\($r.StatusCode\\)\"; \"LEN: $\\($r.Content.Length\\)\"; if \\($r.Content -match \"Buscador de Centros Educativos\"\\) { \"TITLE_OK\" } else { \"TITLE_MISSING\" } } catch { \"ERR: $_\" }; try { $j = Invoke-WebRequest -UseBasicParsing -Uri \"http://localhost:4321/data/centros.json\" -TimeoutSec 5; \"JSON_STATUS: $\\($j.StatusCode\\) LEN: $\\($j.Content.Length\\)\" } catch { \"JSON_ERR: $_\" })"
+      "PowerShell(Start-Sleep -Seconds 2; try { $r = Invoke-WebRequest -UseBasicParsing -Uri \"http://localhost:4321/\" -TimeoutSec 5; \"STATUS: $\\($r.StatusCode\\)\"; \"LEN: $\\($r.Content.Length\\)\"; if \\($r.Content -match \"Buscador de Centros Educativos\"\\) { \"TITLE_OK\" } else { \"TITLE_MISSING\" } } catch { \"ERR: $_\" }; try { $j = Invoke-WebRequest -UseBasicParsing -Uri \"http://localhost:4321/data/centros.json\" -TimeoutSec 5; \"JSON_STATUS: $\\($j.StatusCode\\) LEN: $\\($j.Content.Length\\)\" } catch { \"JSON_ERR: $_\" })",
+      "Bash(python)",
+      "WebFetch(domain:www.comunidad.madrid)",
+      "WebSearch",
+      "Bash(dir \"d:\\\\Personal\\\\Noemi\\\\CodigosCentros\\\\2026\\\\salida\")",
+      "WebFetch(domain:datos.gob.es)",
+      "WebFetch(domain:datos.comunidad.madrid)",
+      "WebFetch(domain:datos.madrid.es)"
     ]
   }
 }
