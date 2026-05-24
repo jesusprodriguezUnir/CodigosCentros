@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import pdfplumber, pandas; print\\('pdfplumber', pdfplumber.__version__\\); print\\('pandas', pandas.__version__\\)\")",
+      "Bash(pyenv versions *)",
+      "Bash(where python *)",
+      "Bash(where py *)",
+      "Read(//d/Temp/pyenv-win-master/pyenv-win/versions/**)",
+      "Bash('D:\\\\Temp\\\\pyenv-win-master\\\\pyenv-win\\\\versions\\\\3.13.2\\\\python.exe' -c 'import sys; print\\(sys.version\\); *)",
+      "Bash('D:\\\\Temp\\\\pyenv-win-master\\\\pyenv-win\\\\versions\\\\3.13.2\\\\python.exe' -c ' *)",
+      "Bash(ls \"C:\\\\Users\\\\jesus\\\\.claude\\\\plans\\\\\" 2>nul | head -5)",
+      "Read(//c/Users/jesus/.claude/**)",
+      "Bash(python -c ' *)",
+      "PowerShell(python -c \"import pandas as pd; df = pd.read_excel\\('2026/salida/consolidado_2526.xlsx'\\); print\\('SHAPE:', df.shape\\); print\\('COLS:', list\\(df.columns\\)\\); print\\(\\); print\\(df.head\\(3\\).to_string\\(\\)\\); print\\(\\); print\\('NULOS:'\\); print\\(df.isna\\(\\).sum\\(\\)\\)\")",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"web-next\\\\public\\\\data\")",
+      "PowerShell(python generar_json.py)",
+      "PowerShell(python -c \"import pandas as pd; df = pd.read_excel\\('2026/salida/consolidado_2526.xlsx'\\); raw = df['Localidad'].unique\\(\\); m = [r for r in raw if 'lcal' in r.lower\\(\\) or 'lcobend' in r.lower\\(\\) or 'lcorc' in r.lower\\(\\)]; [print\\(repr\\(r\\)\\) for r in m]\")",
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "PowerShell(npm install next@15.5.5 --no-fund --no-audit 2>&1)",
+      "PowerShell(npm install next@latest react@latest react-dom@latest --no-fund --no-audit 2>&1)",
+      "PowerShell(npm install -D @types/react@^19 @types/react-dom@^19 --no-fund --no-audit 2>&1)",
+      "PowerShell(npm run build 2>&1)",
+      "PowerShell(npx --yes serve out -p 4321 -L 2>&1)",
+      "PowerShell(Start-Sleep -Seconds 2; try { $r = Invoke-WebRequest -UseBasicParsing -Uri \"http://localhost:4321/\" -TimeoutSec 5; \"STATUS: $\\($r.StatusCode\\)\"; \"LEN: $\\($r.Content.Length\\)\"; if \\($r.Content -match \"Buscador de Centros Educativos\"\\) { \"TITLE_OK\" } else { \"TITLE_MISSING\" } } catch { \"ERR: $_\" }; try { $j = Invoke-WebRequest -UseBasicParsing -Uri \"http://localhost:4321/data/centros.json\" -TimeoutSec 5; \"JSON_STATUS: $\\($j.StatusCode\\) LEN: $\\($j.Content.Length\\)\" } catch { \"JSON_ERR: $_\" })"
+    ]
+  }
+}

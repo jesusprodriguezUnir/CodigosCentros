@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f6f7f9;
+  --foreground: #1f2333;
+}
+
+html,
+body {
+  background: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar discreto estilo institucional */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd2dc;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a3acba;
+}
+
+/* Banda institucional inferior estilo comunidad.madrid */
+.cm-stripe {
+  background: linear-gradient(
+    90deg,
+    #c8102e 0 25%,
+    #1f2333 25% 50%,
+    #c8102e 50% 75%,
+    #1f2333 75% 100%
+  );
+  height: 4px;
+}

@@ -1,0 +1,670 @@
+[
+  {
+    "nombre": "Ajalvir",
+    "centros": 1
+  },
+  {
+    "nombre": "Alalpardo",
+    "centros": 1
+  },
+  {
+    "nombre": "Alamo (el)",
+    "centros": 2
+  },
+  {
+    "nombre": "Alcalá de Henares",
+    "centros": 47
+  },
+  {
+    "nombre": "Alcobendas",
+    "centros": 19
+  },
+  {
+    "nombre": "Alcorcón",
+    "centros": 34
+  },
+  {
+    "nombre": "Aldea del Fresno",
+    "centros": 1
+  },
+  {
+    "nombre": "Algete",
+    "centros": 9
+  },
+  {
+    "nombre": "Alpedrete",
+    "centros": 5
+  },
+  {
+    "nombre": "Anchuelo",
+    "centros": 1
+  },
+  {
+    "nombre": "Aranjuez",
+    "centros": 14
+  },
+  {
+    "nombre": "Arganda del Rey",
+    "centros": 15
+  },
+  {
+    "nombre": "Arroyomolinos",
+    "centros": 8
+  },
+  {
+    "nombre": "Batres",
+    "centros": 1
+  },
+  {
+    "nombre": "Becerril de la Sierra",
+    "centros": 1
+  },
+  {
+    "nombre": "Belmonte de Tajo",
+    "centros": 1
+  },
+  {
+    "nombre": "Boadilla del Monte",
+    "centros": 8
+  },
+  {
+    "nombre": "Boalo (el)",
+    "centros": 2
+  },
+  {
+    "nombre": "Brunete",
+    "centros": 3
+  },
+  {
+    "nombre": "Buitrago del Lozoya",
+    "centros": 2
+  },
+  {
+    "nombre": "Bustarviejo",
+    "centros": 1
+  },
+  {
+    "nombre": "Cabanillas de la Sierra",
+    "centros": 1
+  },
+  {
+    "nombre": "Cabrera (la)",
+    "centros": 3
+  },
+  {
+    "nombre": "Cadalso de los Vidrios",
+    "centros": 1
+  },
+  {
+    "nombre": "Camarma de Esteruelas",
+    "centros": 1
+  },
+  {
+    "nombre": "Campo Real",
+    "centros": 2
+  },
+  {
+    "nombre": "Carabaña",
+    "centros": 1
+  },
+  {
+    "nombre": "Casarrubuelos",
+    "centros": 1
+  },
+  {
+    "nombre": "Cenicientos",
+    "centros": 1
+  },
+  {
+    "nombre": "Cerceda",
+    "centros": 1
+  },
+  {
+    "nombre": "Cercedilla",
+    "centros": 2
+  },
+  {
+    "nombre": "Chapineria",
+    "centros": 1
+  },
+  {
+    "nombre": "Chinchon",
+    "centros": 2
+  },
+  {
+    "nombre": "Ciempozuelos",
+    "centros": 6
+  },
+  {
+    "nombre": "Cobeña",
+    "centros": 1
+  },
+  {
+    "nombre": "Collado Villalba",
+    "centros": 15
+  },
+  {
+    "nombre": "Collado-mediano",
+    "centros": 3
+  },
+  {
+    "nombre": "Colmenar Viejo",
+    "centros": 15
+  },
+  {
+    "nombre": "Colmenar de Oreja",
+    "centros": 2
+  },
+  {
+    "nombre": "Colmenar del Arroyo",
+    "centros": 1
+  },
+  {
+    "nombre": "Colmenarejo",
+    "centros": 3
+  },
+  {
+    "nombre": "Coslada",
+    "centros": 27
+  },
+  {
+    "nombre": "Cubas",
+    "centros": 3
+  },
+  {
+    "nombre": "Daganzo de Arriba",
+    "centros": 3
+  },
+  {
+    "nombre": "Escorial (el)",
+    "centros": 3
+  },
+  {
+    "nombre": "Estremera",
+    "centros": 2
+  },
+  {
+    "nombre": "Fresnedillas de la Oliva",
+    "centros": 1
+  },
+  {
+    "nombre": "Fuenlabrada",
+    "centros": 55
+  },
+  {
+    "nombre": "Fuente el Saz de Jarama",
+    "centros": 1
+  },
+  {
+    "nombre": "Fuentidueña de Tajo",
+    "centros": 1
+  },
+  {
+    "nombre": "Galapagar",
+    "centros": 7
+  },
+  {
+    "nombre": "Getafe",
+    "centros": 45
+  },
+  {
+    "nombre": "Griñon",
+    "centros": 2
+  },
+  {
+    "nombre": "Guadalix de la Sierra",
+    "centros": 2
+  },
+  {
+    "nombre": "Guadarrama",
+    "centros": 5
+  },
+  {
+    "nombre": "Hoyo de Manzanares",
+    "centros": 2
+  },
+  {
+    "nombre": "Humanes de Madrid",
+    "centros": 7
+  },
+  {
+    "nombre": "Leganes",
+    "centros": 54
+  },
+  {
+    "nombre": "Loeches",
+    "centros": 4
+  },
+  {
+    "nombre": "Lozoya",
+    "centros": 1
+  },
+  {
+    "nombre": "Lozoyuela (capital)",
+    "centros": 1
+  },
+  {
+    "nombre": "Madrid- Arganzuela",
+    "centros": 1
+  },
+  {
+    "nombre": "Madrid- Chamberí",
+    "centros": 2
+  },
+  {
+    "nombre": "Madrid- Ciudad Lineal",
+    "centros": 2
+  },
+  {
+    "nombre": "Madrid- Fuencarral-el Pardo",
+    "centros": 2
+  },
+  {
+    "nombre": "Madrid- Moratalaz",
+    "centros": 1
+  },
+  {
+    "nombre": "Madrid- Salamanca",
+    "centros": 1
+  },
+  {
+    "nombre": "Madrid- Tetuán",
+    "centros": 1
+  },
+  {
+    "nombre": "Madrid- Vicálvaro",
+    "centros": 1
+  },
+  {
+    "nombre": "Madrid-arganzuela",
+    "centros": 12
+  },
+  {
+    "nombre": "Madrid-barajas",
+    "centros": 5
+  },
+  {
+    "nombre": "Madrid-carabanchel",
+    "centros": 32
+  },
+  {
+    "nombre": "Madrid-centro",
+    "centros": 13
+  },
+  {
+    "nombre": "Madrid-chamartín",
+    "centros": 10
+  },
+  {
+    "nombre": "Madrid-chamberí",
+    "centros": 8
+  },
+  {
+    "nombre": "Madrid-ciudad Lineal",
+    "centros": 17
+  },
+  {
+    "nombre": "Madrid-fuencarral-el Pardo",
+    "centros": 34
+  },
+  {
+    "nombre": "Madrid-hortaleza",
+    "centros": 29
+  },
+  {
+    "nombre": "Madrid-latina",
+    "centros": 34
+  },
+  {
+    "nombre": "Madrid-moncloa-aravaca",
+    "centros": 13
+  },
+  {
+    "nombre": "Madrid-moratalaz",
+    "centros": 17
+  },
+  {
+    "nombre": "Madrid-puente de Vallecas",
+    "centros": 42
+  },
+  {
+    "nombre": "Madrid-retiro",
+    "centros": 8
+  },
+  {
+    "nombre": "Madrid-salamanca",
+    "centros": 5
+  },
+  {
+    "nombre": "Madrid-san Blas",
+    "centros": 28
+  },
+  {
+    "nombre": "Madrid-tetuán",
+    "centros": 12
+  },
+  {
+    "nombre": "Madrid-usera",
+    "centros": 27
+  },
+  {
+    "nombre": "Madrid-vicálvaro",
+    "centros": 11
+  },
+  {
+    "nombre": "Madrid-villa de Vallecas",
+    "centros": 17
+  },
+  {
+    "nombre": "Madrid-villaverde",
+    "centros": 27
+  },
+  {
+    "nombre": "Majadahonda",
+    "centros": 11
+  },
+  {
+    "nombre": "Manzanares el Real",
+    "centros": 1
+  },
+  {
+    "nombre": "Marañosa (la)",
+    "centros": 1
+  },
+  {
+    "nombre": "Mataelpino",
+    "centros": 1
+  },
+  {
+    "nombre": "Meco",
+    "centros": 2
+  },
+  {
+    "nombre": "Mejorada del Campo",
+    "centros": 8
+  },
+  {
+    "nombre": "Miraflores de la Sierra",
+    "centros": 1
+  },
+  {
+    "nombre": "Molar (el)",
+    "centros": 4
+  },
+  {
+    "nombre": "Molinos (los)",
+    "centros": 1
+  },
+  {
+    "nombre": "Moraleja de Enmedio",
+    "centros": 2
+  },
+  {
+    "nombre": "Moralzarzal",
+    "centros": 3
+  },
+  {
+    "nombre": "Morata de Tajuña",
+    "centros": 2
+  },
+  {
+    "nombre": "Mostoles",
+    "centros": 56
+  },
+  {
+    "nombre": "Navacerrada",
+    "centros": 1
+  },
+  {
+    "nombre": "Navalafuente",
+    "centros": 1
+  },
+  {
+    "nombre": "Navalagamella",
+    "centros": 1
+  },
+  {
+    "nombre": "Navalcarnero",
+    "centros": 7
+  },
+  {
+    "nombre": "Navas del Rey",
+    "centros": 1
+  },
+  {
+    "nombre": "Nuevo Baztan",
+    "centros": 1
+  },
+  {
+    "nombre": "Orusco",
+    "centros": 1
+  },
+  {
+    "nombre": "Paracuellos de Jarama",
+    "centros": 5
+  },
+  {
+    "nombre": "Parla",
+    "centros": 35
+  },
+  {
+    "nombre": "Patones de Abajo (capital)",
+    "centros": 1
+  },
+  {
+    "nombre": "Pedrezuela",
+    "centros": 2
+  },
+  {
+    "nombre": "Pelayos de la Presa",
+    "centros": 1
+  },
+  {
+    "nombre": "Perales de Tajuña",
+    "centros": 1
+  },
+  {
+    "nombre": "Pinto",
+    "centros": 10
+  },
+  {
+    "nombre": "Pozuelo de Alarcon",
+    "centros": 13
+  },
+  {
+    "nombre": "Quijorna",
+    "centros": 1
+  },
+  {
+    "nombre": "Rascafria",
+    "centros": 1
+  },
+  {
+    "nombre": "Ribatejada",
+    "centros": 1
+  },
+  {
+    "nombre": "Rivas-vaciamadrid",
+    "centros": 22
+  },
+  {
+    "nombre": "Robledo de Chavela",
+    "centros": 2
+  },
+  {
+    "nombre": "Rozas de Madrid (las)",
+    "centros": 15
+  },
+  {
+    "nombre": "Rozas de Puerto Real",
+    "centros": 1
+  },
+  {
+    "nombre": "San Agustin de Guadalix",
+    "centros": 3
+  },
+  {
+    "nombre": "San Fernando de Henares",
+    "centros": 13
+  },
+  {
+    "nombre": "San Lorenzo de el Escorial",
+    "centros": 6
+  },
+  {
+    "nombre": "San Martin de Valdeiglesias",
+    "centros": 5
+  },
+  {
+    "nombre": "San Martin de la Vega",
+    "centros": 6
+  },
+  {
+    "nombre": "San Sebastián de los Reyes",
+    "centros": 23
+  },
+  {
+    "nombre": "Santorcaz",
+    "centros": 1
+  },
+  {
+    "nombre": "Santos de la Humosa (los)",
+    "centros": 1
+  },
+  {
+    "nombre": "Serracines",
+    "centros": 1
+  },
+  {
+    "nombre": "Serranillos del Valle",
+    "centros": 1
+  },
+  {
+    "nombre": "Sevilla la Nueva",
+    "centros": 3
+  },
+  {
+    "nombre": "Soto del Real",
+    "centros": 4
+  },
+  {
+    "nombre": "Talamanca de Jarama",
+    "centros": 1
+  },
+  {
+    "nombre": "Tielmes",
+    "centros": 1
+  },
+  {
+    "nombre": "Titulcia",
+    "centros": 1
+  },
+  {
+    "nombre": "Torrejon de Ardoz",
+    "centros": 31
+  },
+  {
+    "nombre": "Torrejon de Velasco",
+    "centros": 1
+  },
+  {
+    "nombre": "Torrejon de la Calzada",
+    "centros": 3
+  },
+  {
+    "nombre": "Torrelaguna",
+    "centros": 3
+  },
+  {
+    "nombre": "Torrelodones",
+    "centros": 7
+  },
+  {
+    "nombre": "Torres de la Alameda",
+    "centros": 3
+  },
+  {
+    "nombre": "Tres Cantos",
+    "centros": 14
+  },
+  {
+    "nombre": "Valdaracete",
+    "centros": 1
+  },
+  {
+    "nombre": "Valdeavero",
+    "centros": 1
+  },
+  {
+    "nombre": "Valdemorillo",
+    "centros": 2
+  },
+  {
+    "nombre": "Valdemoro",
+    "centros": 17
+  },
+  {
+    "nombre": "Valdetorres de Jarama",
+    "centros": 1
+  },
+  {
+    "nombre": "Valdilecha",
+    "centros": 1
+  },
+  {
+    "nombre": "Velilla de San Antonio",
+    "centros": 3
+  },
+  {
+    "nombre": "Vellon (el)",
+    "centros": 1
+  },
+  {
+    "nombre": "Venturada",
+    "centros": 1
+  },
+  {
+    "nombre": "Villa del Prado",
+    "centros": 2
+  },
+  {
+    "nombre": "Villaconejos",
+    "centros": 1
+  },
+  {
+    "nombre": "Villalbilla",
+    "centros": 4
+  },
+  {
+    "nombre": "Villamanta",
+    "centros": 1
+  },
+  {
+    "nombre": "Villamantilla",
+    "centros": 1
+  },
+  {
+    "nombre": "Villanueva de Perales",
+    "centros": 1
+  },
+  {
+    "nombre": "Villanueva de la Cañada",
+    "centros": 5
+  },
+  {
+    "nombre": "Villanueva del Pardillo",
+    "centros": 4
+  },
+  {
+    "nombre": "Villarejo de Salvanes",
+    "centros": 3
+  },
+  {
+    "nombre": "Villaviciosa de Odon",
+    "centros": 4
+  },
+  {
+    "nombre": "Zarzalejo",
+    "centros": 1
+  }
+]
