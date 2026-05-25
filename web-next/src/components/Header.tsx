@@ -1,6 +1,10 @@
 import { GraduationCap } from "lucide-react";
 
-export function Header() {
+interface HeaderProps {
+  updatedAt?: string | null;
+}
+
+export function Header({ updatedAt }: HeaderProps = {}) {
   return (
     <header className="bg-white border-b border-ink-200">
       <div className="container flex items-center justify-between py-5">
@@ -30,6 +34,18 @@ export function Header() {
           <span>Datos cursos 22/23 → 25/26</span>
         </nav>
       </div>
+      {updatedAt && (
+        <div className="bg-madrid-50 border-t border-madrid-100 py-1.5 text-center text-xs text-madrid-700">
+          Datos actualizados:{" "}
+          <time dateTime={updatedAt}>
+            {new Date(updatedAt).toLocaleDateString("es-ES", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}
+          </time>
+        </div>
+      )}
       <div className="cm-stripe" />
     </header>
   );

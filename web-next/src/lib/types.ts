@@ -9,10 +9,25 @@ export type Vacantes = {
 
 export type Centro = {
   codigo: string;
-  centro: string;
-  localidad: string;
+  centro: string;   // nombre en Supabase
+  localidad: string; // municipio en Supabase
   vacantes: Vacantes;
   total: number;
+  // Campos enriquecidos (disponibles tras ingesta_centros.py)
+  dat?: string;
+  tipo?: string;
+  titularidad?: string;
+  jornada?: string;
+  bilingue?: boolean;
+  idiomas_bilingue?: string[];
+  etapa?: string[];
+  lat?: number;
+  lng?: number;
+  direccion?: string;
+  cp?: string;
+  telefono?: string;
+  email?: string;
+  updated_at?: string;
 };
 
 export type Municipio = {

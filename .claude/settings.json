@@ -29,7 +29,11 @@
       "Bash(dir \"d:\\\\Personal\\\\Noemi\\\\CodigosCentros\\\\2026\\\\salida\")",
       "WebFetch(domain:datos.gob.es)",
       "WebFetch(domain:datos.comunidad.madrid)",
-      "WebFetch(domain:datos.madrid.es)"
+      "WebFetch(domain:datos.madrid.es)",
+      "WebFetch(domain:miconcursillo.es)",
+      "WebFetch(domain:datos.crtm.es)",
+      "mcp__claude_ai_Vercel__web_fetch_vercel_url",
+      "WebFetch(domain:s-nt-s.github.io)"
     ]
   }
 }

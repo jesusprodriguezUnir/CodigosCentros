@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "supabase": true,
+        "Test-Path": true,
+        "scoop": true,
+        "npm --version 2>&1": true
+    }
+}

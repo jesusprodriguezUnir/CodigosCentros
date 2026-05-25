@@ -54,3 +54,6 @@ vercel --prod # publicar
 2. Root directory: `web-next`
 3. Framework preset: Next.js (detectado automáticamente)
 4. Build command y output directory ya vienen en [vercel.json](vercel.json).
+
+
+https://github.com/s-nt-s/centros-db
