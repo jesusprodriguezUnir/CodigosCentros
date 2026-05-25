@@ -33,7 +33,9 @@
       "WebFetch(domain:miconcursillo.es)",
       "WebFetch(domain:datos.crtm.es)",
       "mcp__claude_ai_Vercel__web_fetch_vercel_url",
-      "WebFetch(domain:s-nt-s.github.io)"
+      "WebFetch(domain:s-nt-s.github.io)",
+      "Bash(Get-ChildItem -Path \"d:\\\\Personal\\\\Noemi\\\\CodigosCentros\" -File -Filter \"*.py\")",
+      "Bash(Select-Object Name)"
     ]
   }
 }

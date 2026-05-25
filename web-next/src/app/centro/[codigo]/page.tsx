@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, MapPin, Phone, Mail } from "lucide-react";
+import { ChevronLeft, MapPin, Phone, Mail, ExternalLink } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CalculadoraRuta } from "@/components/CalculadoraRuta";
@@ -118,6 +118,30 @@ export default async function Page({ params }: { params: Params }) {
                   />
                 )}
               </dl>
+
+              {/* Links oficiales */}
+              <div className="mt-5 flex flex-wrap gap-2 pt-4 border-t border-ink-100">
+                <a
+                  href={`https://gestiona.madrid.org/wpad_pub/run/j/MostrarFichaCentro.icm?cdCentro=${c.codigo}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-madrid-50 border border-madrid-200 px-3 py-2 text-xs font-semibold text-madrid-700 hover:bg-madrid-100 transition-colors"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  Ficha oficial · Comunidad de Madrid
+                </a>
+                {c.lat != null && c.lng != null && (
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lng}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-ink-50 border border-ink-200 px-3 py-2 text-xs font-semibold text-ink-700 hover:bg-ink-100 transition-colors"
+                  >
+                    <MapPin className="h-3.5 w-3.5" />
+                    Ver en Google Maps
+                  </a>
+                )}
+              </div>
             </div>
 
             {/* Historial de vacantes */}

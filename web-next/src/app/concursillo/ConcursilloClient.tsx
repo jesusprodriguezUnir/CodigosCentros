@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback, useRef } from "react";
+import { useMemo, useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   DndContext,
@@ -279,7 +279,7 @@ export function ConcursilloClient({ centros }: Props) {
   const [syncStatus, setSyncStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   // Cargar usuario y lista de la nube al montar
-  useCallback(() => {
+  useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(async ({ data }) => {
       setUser(data.user);
