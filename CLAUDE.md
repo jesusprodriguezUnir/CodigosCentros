@@ -14,9 +14,11 @@ python AnalizarExcel2.py   # curso 23/24 — multi-hoja, cabeceras en fila 3
 python AnalizarExcel3.py   # curso 22/23 — multi-hoja, cabeceras en fila 3
 python AnalizarPDF4.py     # curso 25/26 — fuentes en PDF (3 archivos, 3 salidas)
 python ConsolidarCentros.py  # une las 6 fuentes en consolidado_2526.xlsx
+python ingesta_centros.py   # descarga CSV oficial CM, enriquece y UPSERT en Supabase
+python scraper_fichas.py    # scrapea ficha oficial de cada centro y UPSERT en Supabase
 ```
 
-Dependencias: `pandas`, un motor Excel (`openpyxl`) y `pdfplumber` (solo para `AnalizarPDF4.py`). No hay `requirements.txt`; instalar con `pip install pandas openpyxl pdfplumber` si falta.
+Dependencias: `pandas`, un motor Excel (`openpyxl`) y `pdfplumber` (solo para `AnalizarPDF4.py`). Para `ingesta_centros.py`: `requests`, `pyproj`, `shapely`, `supabase`, `tqdm`. Para `scraper_fichas.py`: `requests`, `beautifulsoup4`, `lxml`, `supabase`, `tqdm`. No hay `requirements.txt`; instalar con `pip install pandas openpyxl pdfplumber requests pyproj shapely supabase tqdm beautifulsoup4 lxml` si falta.
 
 ## Diferencia clave entre los tres scripts
 
