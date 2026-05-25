@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit -m ' *)",
+      "Bash(npm run *)",
+      "Bash(npm install *)",
+      "Bash(npm uninstall *)",
+      "Bash(npx tsc *)",
+      "Bash(git add *)",
+      "Bash(awk 'NR<=149 || \\(NR>=497 && NR<=520\\)' src/app/centro/\\\\[codigo\\\\]/page.tsx)",
+      "Read(//tmp/**)",
+      "Bash(cp /tmp/page_new.tsx d:/Personal/Noemi/CodigosCentros/web-next/src/app/centro/\\\\[codigo\\\\]/page.tsx && wc -l d:/Personal/Noemi/CodigosCentros/web-next/src/app/centro/\\\\[codigo\\\\]/page.tsx)",
+      "Bash(until grep *)",
+      "Read(//c/Users/jesus/AppData/Local/Temp/claude/d--Personal-Noemi-CodigosCentros/d11a5556-f9a6-482d-9481-534bf0893829/tasks/**)",
+      "Bash(Get-ChildItem -Path \"d:\\\\Personal\\\\Noemi\\\\CodigosCentros\\\\web-next\" -Depth 1)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:3001/)"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
+    ]
+  }
+}

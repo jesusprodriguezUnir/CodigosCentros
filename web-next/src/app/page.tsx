@@ -20,6 +20,7 @@ type SupabaseCentro = {
   jornada: string | null;
   bilingue: boolean | null;
   idiomas_bilingue: string[] | null;
+  programas_excelencia: Record<string, boolean> | null;
   etapa: string[] | null;
   vacantes: Record<string, number> | null;
   updated_at: string | null;
@@ -61,6 +62,7 @@ function mapCentro(row: SupabaseCentro): Centro {
     updated_at: row.updated_at ?? undefined,
     lat: row.lat ?? undefined,
     lng: row.lng ?? undefined,
+    programas_excelencia: row.programas_excelencia ?? undefined,
   };
 }
 
@@ -69,7 +71,7 @@ export default async function Page() {
 
   // Supabase PostgREST tiene max-rows=1000; paginamos para obtener todos
   const SELECT_FIELDS =
-    "codigo, nombre, municipio, distrito, dat, tipo, titularidad, jornada, bilingue, idiomas_bilingue, etapa, vacantes, updated_at, lat, lng";
+    "codigo, nombre, municipio, distrito, dat, tipo, titularidad, jornada, bilingue, idiomas_bilingue, etapa, vacantes, updated_at, lat, lng, programas_excelencia";
   const PAGE_SIZE = 1000;
   let allRows: SupabaseCentro[] = [];
   let page = 0;
@@ -128,26 +130,27 @@ export default async function Page() {
   return (
     <>
       <Header updatedAt={updatedAt} />
-      <div className="bg-white border-b border-ink-200">
-        <div className="container py-4">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+      <div className="border-b border-ink-200 bg-gradient-to-b from-madrid-50/60 to-white">
+        <div className="container py-6 md:py-8">
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div className="max-w-2xl">
-              <p className="inline-flex items-center gap-2 rounded-full bg-madrid-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-madrid-700">
+              <p className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-madrid-700 ring-1 ring-madrid-200">
                 <Sparkles className="h-3.5 w-3.5" />
                 Curso 2025/2026
               </p>
-              <h1 className="mt-3 font-display text-2xl font-bold leading-tight text-ink-900 md:text-3xl">
+              <h1 className="mt-3 font-display text-3xl font-bold leading-tight text-ink-900 md:text-4xl">
                 Vacantes en centros educativos públicos
               </h1>
-              <p className="mt-2 text-sm text-ink-600">
-                Consulta el histórico de vacantes adjudicadas por centro y municipio en la
-                Comunidad de Madrid, desde el curso 22/23 hasta el actual.
+              <p className="mt-2 text-sm text-ink-600 md:text-base">
+                Filtra por municipio, jornada, bilingüe o por cercanía a tu dirección.
+                Encuentra el centro adecuado y consulta el histórico de vacantes desde
+                el curso 22/23.
               </p>
-              <p className="mt-1 text-xs text-ink-400">
+              <p className="mt-2 text-xs text-ink-400">
                 {formatNumber(municipios.length)} municipios · {formatNumber(centros.length)} centros
               </p>
             </div>
-            <div className="flex gap-2 shrink-0">
+            <div className="flex shrink-0 flex-wrap gap-2">
               <StatPill label="Centros" value={centros.length} />
               <StatPill label="Vacantes 25/26" value={totalVacantes2526} accent="madrid" />
               <StatPill label="Histórico" value={totalVacantesHistorico} />

@@ -2,24 +2,52 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Plus, Check } from "lucide-react";
+import { ChevronDown, ChevronRight, Plus, Check, SearchX } from "lucide-react";
 import type { Centro } from "@/lib/types";
 import { cn, formatNumber } from "@/lib/utils";
 import { Sparkline } from "./Sparkline";
 import { useConcursilloStore } from "@/lib/store/concursillo";
 
+export type CentroEnTabla = Centro & { distanciaKm?: number };
+
 type Props = {
-  centros: Centro[];
+  centros: CentroEnTabla[];
+  mostrarDistancia?: boolean;
+  onLimpiar?: () => void;
 };
 
 const PAGE = 50;
 
-export function TablaCentros({ centros }: Props) {
+export function TablaCentros({ centros, mostrarDistancia = false, onLimpiar }: Props) {
   const [visible, setVisible] = useState(PAGE);
   const [abierto, setAbierto] = useState<string | null>(null);
 
   const mostrar = centros.slice(0, visible);
   const haymas = visible < centros.length;
+  const colSpan = mostrarDistancia ? 11 : 10;
+
+  if (centros.length === 0) {
+    return (
+      <section className="rounded-xl border border-ink-200 bg-white p-12 text-center shadow-soft">
+        <SearchX className="mx-auto mb-3 h-10 w-10 text-ink-300" />
+        <p className="font-display text-lg font-semibold text-ink-900">
+          No hay centros con esos filtros
+        </p>
+        <p className="mt-1 text-sm text-ink-500">
+          Prueba a ampliar el radio, cambiar de municipio o quitar algún filtro.
+        </p>
+        {onLimpiar && (
+          <button
+            type="button"
+            onClick={onLimpiar}
+            className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-madrid-600 px-4 py-2 text-sm font-medium text-white hover:bg-madrid-700"
+          >
+            Limpiar filtros
+          </button>
+        )}
+      </section>
+    );
+  }
 
   return (
     <section className="overflow-hidden rounded-xl border border-ink-200 bg-white shadow-soft">
@@ -30,6 +58,9 @@ export function TablaCentros({ centros }: Props) {
               <th className="w-8 py-3 pl-4" />
               <th className="py-3 pr-4 font-semibold">Centro</th>
               <th className="py-3 pr-4 font-semibold">Municipio</th>
+              {mostrarDistancia && (
+                <th className="py-3 pr-4 text-right font-semibold">Distancia</th>
+              )}
               <th className="py-3 pr-4 font-semibold text-right hidden sm:table-cell">22/23</th>
               <th className="py-3 pr-4 font-semibold text-right hidden sm:table-cell">23/24</th>
               <th className="py-3 pr-4 font-semibold text-right hidden sm:table-cell">24/25</th>
@@ -51,16 +82,11 @@ export function TablaCentros({ centros }: Props) {
                   v2526={v2526}
                   expandido={expandido}
                   onToggle={() => setAbierto(expandido ? null : c.codigo)}
+                  mostrarDistancia={mostrarDistancia}
+                  colSpan={colSpan}
                 />
               );
             })}
-            {mostrar.length === 0 && (
-              <tr>
-                <td colSpan={10} className="py-16 text-center text-ink-500">
-                  No hay centros que coincidan con los filtros.
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
@@ -88,11 +114,15 @@ function FilaCentro({
   v2526,
   expandido,
   onToggle,
+  mostrarDistancia,
+  colSpan,
 }: {
-  centro: Centro;
+  centro: CentroEnTabla;
   v2526: number;
   expandido: boolean;
   onToggle: () => void;
+  mostrarDistancia: boolean;
+  colSpan: number;
 }) {
   const v = centro.vacantes;
   return (
@@ -114,14 +144,37 @@ function FilaCentro({
         <td className="py-3 pr-4 align-top">
           <Link
             href={`/centro/${centro.codigo}`}
-            className="font-medium text-ink-900 hover:text-madrid-600 transition-colors"
+            className="font-medium text-ink-900 transition-colors hover:text-madrid-600"
             onClick={(e) => e.stopPropagation()}
           >
             {centro.centro}
           </Link>
-          <p className="mt-0.5 text-xs text-ink-500 font-mono">{centro.codigo}</p>
+          <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
+            <span className="font-mono text-xs text-ink-500">{centro.codigo}</span>
+            {centro.jornada && (
+              <span className="inline-flex items-center rounded-full bg-ink-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-ink-600">
+                {centro.jornada}
+              </span>
+            )}
+            {centro.bilingue && (
+              <span className="inline-flex items-center rounded-full bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-blue-700 ring-1 ring-blue-200">
+                Bilingüe
+              </span>
+            )}
+            {centro.programas_excelencia &&
+              Object.values(centro.programas_excelencia).some(Boolean) && (
+              <span className="inline-flex items-center rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-700 ring-1 ring-amber-200">
+                Excelencia
+              </span>
+            )}
+          </div>
         </td>
         <td className="py-3 pr-4 align-top text-ink-700">{centro.localidad}</td>
+        {mostrarDistancia && (
+          <td className="py-3 pr-4 text-right align-top font-mono text-xs tabular-nums text-madrid-700">
+            {centro.distanciaKm != null ? `${centro.distanciaKm.toFixed(1)} km` : "—"}
+          </td>
+        )}
         <td className="hidden sm:table-cell py-3 pr-4 align-top text-right tabular-nums text-ink-700">
           {v.c2223}
         </td>
@@ -156,7 +209,7 @@ function FilaCentro({
       {expandido && (
         <tr className="bg-madrid-50/30">
           <td />
-          <td colSpan={9} className="px-4 py-4 animate-fade-in">
+          <td colSpan={colSpan - 1} className="px-4 py-4 animate-fade-in">
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
               <Detalle label="RH09 — Adj. def. maestros" valor={v.c2526Rh09} />
               <Detalle label="Anexo I — CEIP ordinarias" valor={v.c2526AnexoI} />

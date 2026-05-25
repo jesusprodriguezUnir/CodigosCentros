@@ -444,9 +444,7 @@ def parsear_ficha(html: str, codigo: str) -> dict[str, Any]:
         "adscripciones": adscripciones if adscripciones else None,
         "ficha_scrapeada_at": datetime.now(timezone.utc).isoformat(),
     }
-    # `jornada` es un campo ya existente en `centros`; si la ficha aporta valor
-    # y la columna está vacía, lo añadimos a un dict aparte de discrepancias.
-    registro["_jornada_ficha"] = jornada_scrap  # consumido por reporte; no se sube
+    registro["jornada"] = jornada_scrap
 
     # Derivar bilingue / idiomas_bilingue desde opciones_linguisticas
     idiomas: list[str] = []
