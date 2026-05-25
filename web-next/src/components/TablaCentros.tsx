@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Plus, Check } from "lucide-react";
 import type { Centro } from "@/lib/types";
 import { cn, formatNumber } from "@/lib/utils";
+import { Sparkline } from "./Sparkline";
+import { useConcursilloStore } from "@/lib/store/concursillo";
 
 type Props = {
   centros: Centro[];
@@ -28,11 +30,13 @@ export function TablaCentros({ centros }: Props) {
               <th className="w-8 py-3 pl-4" />
               <th className="py-3 pr-4 font-semibold">Centro</th>
               <th className="py-3 pr-4 font-semibold">Municipio</th>
-              <th className="py-3 pr-4 font-semibold text-right">22/23</th>
-              <th className="py-3 pr-4 font-semibold text-right">23/24</th>
-              <th className="py-3 pr-4 font-semibold text-right">24/25</th>
+              <th className="py-3 pr-4 font-semibold text-right hidden sm:table-cell">22/23</th>
+              <th className="py-3 pr-4 font-semibold text-right hidden sm:table-cell">23/24</th>
+              <th className="py-3 pr-4 font-semibold text-right hidden sm:table-cell">24/25</th>
               <th className="py-3 pr-4 font-semibold text-right">25/26</th>
-              <th className="py-3 pr-4 font-semibold text-right">Total</th>
+              <th className="py-3 pr-4 font-semibold text-right hidden sm:table-cell">Total</th>
+              <th className="py-3 pr-4 font-semibold text-center">Tendencia</th>
+              <th className="w-10 py-3 pr-4" />{/* Lista action */}
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
@@ -52,7 +56,7 @@ export function TablaCentros({ centros }: Props) {
             })}
             {mostrar.length === 0 && (
               <tr>
-                <td colSpan={8} className="py-16 text-center text-ink-500">
+                <td colSpan={10} className="py-16 text-center text-ink-500">
                   No hay centros que coincidan con los filtros.
                 </td>
               </tr>
@@ -118,13 +122,13 @@ function FilaCentro({
           <p className="mt-0.5 text-xs text-ink-500 font-mono">{centro.codigo}</p>
         </td>
         <td className="py-3 pr-4 align-top text-ink-700">{centro.localidad}</td>
-        <td className="py-3 pr-4 align-top text-right tabular-nums text-ink-700">
+        <td className="hidden sm:table-cell py-3 pr-4 align-top text-right tabular-nums text-ink-700">
           {v.c2223}
         </td>
-        <td className="py-3 pr-4 align-top text-right tabular-nums text-ink-700">
+        <td className="hidden sm:table-cell py-3 pr-4 align-top text-right tabular-nums text-ink-700">
           {v.c2324}
         </td>
-        <td className="py-3 pr-4 align-top text-right tabular-nums text-ink-700">
+        <td className="hidden sm:table-cell py-3 pr-4 align-top text-right tabular-nums text-ink-700">
           {v.c2425}
         </td>
         <td className="py-3 pr-4 align-top text-right tabular-nums">
@@ -139,14 +143,20 @@ function FilaCentro({
             {v2526}
           </span>
         </td>
-        <td className="py-3 pr-4 align-top text-right tabular-nums font-semibold text-ink-900">
+        <td className="hidden sm:table-cell py-3 pr-4 align-top text-right tabular-nums font-semibold text-ink-900">
           {centro.total}
+        </td>
+        <td className="py-3 pr-4 align-top">
+          <Sparkline valores={[v.c2223, v.c2324, v.c2425, v2526]} />
+        </td>
+        <td className="py-3 pr-4 align-top">
+          <BotonLista centro={centro} />
         </td>
       </tr>
       {expandido && (
         <tr className="bg-madrid-50/30">
           <td />
-          <td colSpan={7} className="px-4 py-4 animate-fade-in">
+          <td colSpan={9} className="px-4 py-4 animate-fade-in">
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
               <Detalle label="RH09 — Adj. def. maestros" valor={v.c2526Rh09} />
               <Detalle label="Anexo I — CEIP ordinarias" valor={v.c2526AnexoI} />
@@ -173,5 +183,33 @@ function Detalle({ label, valor }: { label: string; valor: number }) {
       </p>
       <p className="mt-1 font-display text-xl font-bold text-ink-900">{valor}</p>
     </div>
+  );
+}
+
+function BotonLista({ centro }: { centro: Centro }) {
+  const enLista = useConcursilloStore((s) => s.miOrden.some((x) => x.codigo === centro.codigo));
+  const { addCentro, removeCentro } = useConcursilloStore();
+
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        if (enLista) {
+          removeCentro(centro.codigo);
+        } else {
+          addCentro(centro);
+        }
+      }}
+      className={cn(
+        "flex items-center justify-center rounded-full p-1.5 transition-colors",
+        enLista
+          ? "bg-madrid-600 text-white hover:bg-madrid-700"
+          : "text-ink-300 hover:text-madrid-600 hover:bg-madrid-50"
+      )}
+      aria-label={enLista ? "Quitar de mi lista" : "Añadir a mi lista"}
+    >
+      {enLista ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+    </button>
   );
 }

@@ -1,34 +1,49 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
-import { Building2, MapPin, ListChecks } from "lucide-react";
-import { StatCard } from "@/components/StatCard";
+import { Suspense, useMemo, useState, useEffect, useRef } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Filtros, type Orden } from "@/components/Filtros";
 import { TablaCentros } from "@/components/TablaCentros";
 import type { Centro, Municipio } from "@/lib/types";
 import { normalizar, sortEs } from "@/lib/utils";
-import { getSearchIndexSync, loadSearchIndex } from "@/lib/searchIndex";
 import Fuse from "fuse.js";
 
 interface Props {
   centros: Centro[];
   municipios: Municipio[];
-  totalVacantes2526: number;
-  totalVacantesHistorico: number;
 }
 
-export function CentrosClient({
+function CentrosClientInner({
   centros,
   municipios,
-  totalVacantes2526,
-  totalVacantesHistorico,
 }: Props) {
-  const [texto, setTexto] = useState("");
-  const [municipio, setMunicipio] = useState("");
-  const [distrito, setDistrito] = useState("");
-  const [tipo, setTipo] = useState("");
-  const [bilingue, setBilingue] = useState(false);
-  const [orden, setOrden] = useState<Orden>("totalDesc");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const initialized = useRef(false);
+
+  const [texto, setTexto] = useState(searchParams.get("q") ?? "");
+  const [municipio, setMunicipio] = useState(searchParams.get("m") ?? "");
+  const [distrito, setDistrito] = useState(searchParams.get("d") ?? "");
+  const [tipo, setTipo] = useState(searchParams.get("t") ?? "");
+  const [bilingue, setBilingue] = useState(searchParams.get("b") === "1");
+  const [orden, setOrden] = useState<Orden>((searchParams.get("o") as Orden) ?? "totalDesc");
+
+  useEffect(() => {
+    initialized.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (!initialized.current) return;
+    const params = new URLSearchParams();
+    if (texto) params.set("q", texto);
+    if (municipio) params.set("m", municipio);
+    if (distrito) params.set("d", distrito);
+    if (tipo) params.set("t", tipo);
+    if (bilingue) params.set("b", "1");
+    if (orden !== "totalDesc") params.set("o", orden);
+    const qs = params.toString();
+    router.replace(qs ? "?" + qs : window.location.pathname, { scroll: false });
+  }, [texto, municipio, distrito, tipo, bilingue, orden, router]);
 
   const tipos = useMemo(
     () =>
@@ -107,37 +122,8 @@ export function CentrosClient({
   }, [centros, texto, municipio, distrito, tipo, bilingue, orden, fuseCentros]);
 
   return (
-    <main className="container py-8">
-      <section className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          icon={Building2}
-          label="Centros"
-          value={centros.length}
-          hint="con datos en algún curso"
-          accent="madrid"
-        />
-        <StatCard
-          icon={MapPin}
-          label="Municipios"
-          value={municipios.length}
-          hint="de la Comunidad de Madrid"
-        />
-        <StatCard
-          icon={ListChecks}
-          label="Vacantes 25/26"
-          value={totalVacantes2526}
-          hint="RH09 + Anexo I + Anexo VI.a"
-          accent="madrid"
-        />
-        <StatCard
-          icon={ListChecks}
-          label="Histórico acumulado"
-          value={totalVacantesHistorico}
-          hint="cursos 22/23 → 25/26"
-        />
-      </section>
-
-      <div className="mb-6">
+    <main className="container pb-8">
+      <div className="mb-4">
         <Filtros
           texto={texto}
           municipio={municipio}
@@ -167,5 +153,13 @@ export function CentrosClient({
 
       <TablaCentros centros={filtrados} />
     </main>
+  );
+}
+
+export function CentrosClient(props: Props) {
+  return (
+    <Suspense fallback={<div className="container pb-8"><p className="text-center text-ink-500 py-8">Cargando…</p></div>}>
+      <CentrosClientInner {...props} />
+    </Suspense>
   );
 }

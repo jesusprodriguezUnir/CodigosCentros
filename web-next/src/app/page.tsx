@@ -1,9 +1,11 @@
 import { Sparkles } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { StatPill } from "@/components/StatPill";
 import { CentrosClient } from "./CentrosClient";
 import { createServerClient } from "@/lib/supabase/server";
 import type { Centro, Municipio } from "@/lib/types";
+import { formatNumber } from "@/lib/utils";
 
 export const revalidate = 3600; // ISR: revalidar cada hora
 
@@ -71,13 +73,15 @@ export default async function Page() {
   const PAGE_SIZE = 1000;
   let allRows: SupabaseCentro[] = [];
   let page = 0;
+  let fetchError = false;
   while (true) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("centros")
       .select(SELECT_FIELDS)
       .not("vacantes", "is", null)
       .order("municipio", { ascending: true })
       .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+    if (error) { fetchError = true; break; }
     if (!data || data.length === 0) break;
     allRows = allRows.concat(data as SupabaseCentro[]);
     if (data.length < PAGE_SIZE) break;
@@ -124,27 +128,46 @@ export default async function Page() {
   return (
     <>
       <Header updatedAt={updatedAt} />
-      <main className="container py-8">
-        <section className="mb-8 max-w-3xl">
-          <p className="inline-flex items-center gap-2 rounded-full bg-madrid-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-madrid-700">
-            <Sparkles className="h-3.5 w-3.5" />
-            Curso 2025/2026
-          </p>
-          <h2 className="mt-4 font-display text-3xl font-bold leading-tight text-ink-900 md:text-4xl">
-            Vacantes en centros educativos públicos
-          </h2>
-          <p className="mt-3 text-ink-600">
-            Consulta el histórico de vacantes adjudicadas por centro y municipio en la
-            Comunidad de Madrid, desde el curso 22/23 hasta el actual.
-          </p>
-        </section>
-      </main>
-      <CentrosClient
-        centros={centros}
-        municipios={municipios}
-        totalVacantes2526={totalVacantes2526}
-        totalVacantesHistorico={totalVacantesHistorico}
-      />
+      <div className="bg-white border-b border-ink-200">
+        <div className="container py-4">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div className="max-w-2xl">
+              <p className="inline-flex items-center gap-2 rounded-full bg-madrid-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-madrid-700">
+                <Sparkles className="h-3.5 w-3.5" />
+                Curso 2025/2026
+              </p>
+              <h1 className="mt-3 font-display text-2xl font-bold leading-tight text-ink-900 md:text-3xl">
+                Vacantes en centros educativos públicos
+              </h1>
+              <p className="mt-2 text-sm text-ink-600">
+                Consulta el histórico de vacantes adjudicadas por centro y municipio en la
+                Comunidad de Madrid, desde el curso 22/23 hasta el actual.
+              </p>
+              <p className="mt-1 text-xs text-ink-400">
+                {formatNumber(municipios.length)} municipios · {formatNumber(centros.length)} centros
+              </p>
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <StatPill label="Centros" value={centros.length} />
+              <StatPill label="Vacantes 25/26" value={totalVacantes2526} accent="madrid" />
+              <StatPill label="Histórico" value={totalVacantesHistorico} />
+            </div>
+          </div>
+        </div>
+      </div>
+      {fetchError ? (
+        <main className="container py-16 text-center">
+          <p className="text-ink-500 mb-2">No se pudieron cargar los datos de los centros.</p>
+          <p className="text-sm text-ink-400">Inténtalo de nuevo más tarde o contacta con soporte si el problema persiste.</p>
+        </main>
+      ) : centros.length === 0 ? (
+        <main className="container py-16 text-center">
+          <p className="text-ink-500 mb-2">No hay centros disponibles en este momento.</p>
+          <p className="text-sm text-ink-400">Los datos pueden estar en proceso de actualización.</p>
+        </main>
+      ) : (
+        <CentrosClient centros={centros} municipios={municipios} />
+      )}
       <Footer />
     </>
   );

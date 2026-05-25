@@ -8,6 +8,12 @@
 // Configurar el Database Webhook en el dashboard de Supabase:
 //   Tabla: flags  |  Evento: INSERT
 //   URL: https://<ref>.supabase.co/functions/v1/flag_alert
+//   HTTP Headers: x-webhook-secret = <valor de FLAG_WEBHOOK_SECRET>
+//
+// Configurar secretos de la función (Supabase Dashboard → Edge Functions → Secrets):
+//   FLAG_WEBHOOK_SECRET=<token aleatorio largo>
+//   RESEND_API_KEY=<api key de Resend>
+//   ADMIN_EMAIL=<destinatario>
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -15,21 +21,61 @@ const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") ?? "centroscm@proton.me";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const FLAG_WEBHOOK_SECRET = Deno.env.get("FLAG_WEBHOOK_SECRET");
+
+// Comparación en tiempo constante para evitar timing attacks.
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  const encoder = new TextEncoder();
+  const aBytes = encoder.encode(a);
+  const bBytes = encoder.encode(b);
+  let diff = 0;
+  for (let i = 0; i < aBytes.length; i++) {
+    diff |= aBytes[i] ^ bBytes[i];
+  }
+  return diff === 0;
+}
 
 Deno.serve(async (req) => {
-  // El webhook de Supabase envía un POST con el record en el body
-  const payload = await req.json();
-  const flag = payload.record;
-
-  if (!flag) {
-    return new Response("No record", { status: 400 });
+  // 1. Verificar secreto compartido. Sin esto, cualquiera podría invocar la URL
+  //    pública de la función (desplegada con --no-verify-jwt) y disparar emails.
+  if (!FLAG_WEBHOOK_SECRET) {
+    console.error("FLAG_WEBHOOK_SECRET no configurado");
+    return new Response("Server misconfigured", { status: 500 });
   }
+  const providedSecret = req.headers.get("x-webhook-secret") ?? "";
+  if (!timingSafeEqual(providedSecret, FLAG_WEBHOOK_SECRET)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  // 2. Parsear y validar la forma del payload.
+  let payload: unknown;
+  try {
+    payload = await req.json();
+  } catch {
+    return new Response("Invalid JSON", { status: 400 });
+  }
+
+  const rawFlag = (payload as { record?: Record<string, unknown> } | null)?.record;
+  if (
+    !rawFlag ||
+    typeof rawFlag.target_type !== "string" ||
+    (rawFlag.target_type !== "review" && rawFlag.target_type !== "comment") ||
+    typeof rawFlag.target_id !== "string"
+  ) {
+    return new Response("Invalid payload", { status: 400 });
+  }
+  const flag = {
+    target_type: rawFlag.target_type as "review" | "comment",
+    target_id: rawFlag.target_id,
+    reason: typeof rawFlag.reason === "string" ? rawFlag.reason : null,
+  };
 
   // Obtener el contenido reportado
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   let contentBody = "(sin contenido)";
-  let contentType = flag.target_type;
+  const contentType = flag.target_type;
   let centroLink = "";
 
   if (flag.target_type === "review") {

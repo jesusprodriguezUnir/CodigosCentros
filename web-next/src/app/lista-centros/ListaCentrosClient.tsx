@@ -29,10 +29,12 @@ import {
   Cloud,
   CloudOff,
   LogIn,
+  Navigation,
+  MapPin,
 } from "lucide-react";
 import { useConcursilloStore } from "@/lib/store/concursillo";
 import type { Centro } from "@/lib/types";
-import { cn, normalizar, formatNumber } from "@/lib/utils";
+import { cn, normalizar, formatNumber, haversineKm } from "@/lib/utils";
 import { syncListaToCloud, loadListaFromCloud } from "@/lib/concursilloSync";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
@@ -71,6 +73,52 @@ async function exportarExcel(lista: Centro[]) {
   writeFile(wb, "mi-lista-centros.xlsx");
 }
 
+// ─── Export PDF vía window.print ──────────────────────────────────────────────
+function exportarPDF(lista: Centro[]) {
+  const win = window.open("", "_blank");
+  if (!win) return;
+  const filas = lista.map((c, i) => {
+    const v2526 = (c.vacantes.c2526Rh09 ?? 0) + (c.vacantes.c2526AnexoI ?? 0) + (c.vacantes.c2526AnexoVia ?? 0);
+    const muni = c.localidad + (c.localidad === "Madrid" && c.distrito ? " · " + c.distrito : "");
+    return "<tr>" +
+      "<td>" + (i + 1) + "</td>" +
+      '<td style="font-family: monospace;">' + c.codigo + "</td>" +
+      "<td>" + c.centro + "</td>" +
+      "<td>" + muni + "</td>" +
+      "<td>" + (c.tipo ?? "\u2014") + "</td>" +
+      '<td class="num"><span class="v">' + v2526 + "</span></td>" +
+      '<td class="num">' + c.total + "</td>" +
+      "</tr>";
+  }).join("\n");
+  const html = [
+    '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">',
+    "<title>Mi lista de centros</title>",
+    "<style>",
+    "body{font-family:system-ui,sans-serif;padding:2rem;color:#1f2333}",
+    "h1{font-size:1.25rem;margin-bottom:.5rem}",
+    "p{color:#647391;font-size:.875rem;margin-bottom:1.5rem}",
+    "table{width:100%;border-collapse:collapse;font-size:.8125rem}",
+    "th{text-align:left;padding:.5rem;background:#f6f7f9;border-bottom:2px solid #d5dae3;font-weight:600}",
+    "td{padding:.5rem;border-bottom:1px solid #eceef3}",
+    ".num{text-align:right;font-variant-numeric:tabular-nums}",
+    ".v{background:#fef2f3;color:#c8102e;font-weight:600;padding:.125rem .375rem;border-radius:4px;font-size:.75rem}",
+    "@media print{body{padding:1rem}}",
+    "</style></head><body>",
+    "<h1>Mi lista de centros</h1>",
+    "<p>" + lista.length + " centros · " + new Date().toLocaleDateString("es-ES") + "</p>",
+    "<table><thead><tr>",
+    "<th>N\u00ba</th><th>C\u00f3digo</th><th>Centro</th><th>Municipio</th><th>Tipo</th>",
+    '<th class="num">Vac. 25/26</th><th class="num">Total</th>',
+    "</tr></thead><tbody>",
+    filas,
+    "</tbody></table>",
+    "<script>window.print();window.close();<" + "/script>",
+    "</body></html>",
+  ].join("");
+  win.document.write(html);
+  win.document.close();
+}
+
 // ─── Componente item de la lista "Mi orden" (sortable) ───────────────────────
 function ItemOrden({
   centro,
@@ -81,7 +129,7 @@ function ItemOrden({
   posicion: number;
   total: number;
 }) {
-  const { removeCentro, moverArriba, moverAbajo, setOrden } =
+  const { removeCentro, moverArriba, moverAbajo, setOrden, origen } =
     useConcursilloStore();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: centro.codigo });
@@ -97,6 +145,11 @@ function ItemOrden({
     (centro.vacantes.c2526Rh09 ?? 0) +
     (centro.vacantes.c2526AnexoI ?? 0) +
     (centro.vacantes.c2526AnexoVia ?? 0);
+
+  const distancia = useMemo(() => {
+    if (!origen || centro.lat == null || centro.lng == null) return null;
+    return haversineKm(origen.lat, origen.lng, centro.lat, centro.lng);
+  }, [origen, centro.lat, centro.lng]);
 
   const handleSetPos = () => {
     const n = parseInt(posInput, 10);
@@ -117,13 +170,13 @@ function ItemOrden({
       <button
         {...attributes}
         {...listeners}
-        className="mt-0.5 hidden cursor-grab touch-none text-ink-300 hover:text-ink-500 md:block"
+        className="mt-1 hidden cursor-grab touch-none text-ink-300 hover:text-ink-500 md:block"
         aria-label="Arrastrar para reordenar"
       >
         <GripVertical className="h-5 w-5" />
       </button>
 
-      {/* Posición + controles móvil */}
+      {/* Nº de orden en círculo */}
       <div className="flex shrink-0 flex-col items-center gap-1">
         <button
           onClick={() => moverArriba(centro.codigo)}
@@ -131,7 +184,7 @@ function ItemOrden({
           disabled={posicion === 1}
           aria-label="Subir"
         >
-          <ChevronUp className="h-4 w-4" />
+          <ChevronUp className="h-3.5 w-3.5" />
         </button>
         {editPos ? (
           <input
@@ -148,7 +201,12 @@ function ItemOrden({
         ) : (
           <button
             onClick={() => { setPosInput(String(posicion)); setEditPos(true); }}
-            className="w-8 text-center font-bold text-madrid-700 hover:underline tabular-nums text-sm"
+            className={cn(
+              "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold tabular-nums transition-colors",
+              posicion <= 5
+                ? "bg-madrid-600 text-white"
+                : "bg-ink-100 text-ink-700"
+            )}
             title="Pulsa para cambiar posición"
           >
             {posicion}
@@ -160,7 +218,7 @@ function ItemOrden({
           disabled={posicion === total}
           aria-label="Bajar"
         >
-          <ChevronDown className="h-4 w-4" />
+          <ChevronDown className="h-3.5 w-3.5" />
         </button>
       </div>
 
@@ -176,11 +234,17 @@ function ItemOrden({
               {centro.centro}
             </Link>
             <p className="text-xs text-ink-500">
-              {centro.localidad}
+              <span className="font-mono">{centro.codigo}</span>
+              {" · "}{centro.localidad}
               {centro.localidad === "Madrid" && centro.distrito
                 ? ` · ${centro.distrito}`
                 : ""}{" "}
               · {centro.dat ?? "Sin DAT"}
+              {distancia != null && (
+                <span className="ml-1.5 text-ink-400">
+                  · {distancia < 1 ? Math.round(distancia * 1000) + " m" : distancia.toFixed(1) + " km"}
+                </span>
+              )}
             </p>
           </div>
           <button
@@ -523,6 +587,11 @@ export function ListaCentrosClient({ centros }: Props) {
 
       {/* ── Panel Mi Orden ── */}
       <section className="lg:col-span-4 flex flex-col">
+        {/* Origen selector */}
+        <div className="mb-2">
+          <OrigenSelector />
+        </div>
+
         <div className="mb-2 flex items-center justify-between">
           <h2 className="font-display font-bold text-ink-900">
             Mi orden{" "}
@@ -533,6 +602,14 @@ export function ListaCentrosClient({ centros }: Props) {
           <div className="flex items-center gap-2">
             {miOrden.length > 0 && (
               <>
+                <button
+                  onClick={() => exportarPDF(miOrden)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-ink-200 px-3 py-1.5 text-xs font-semibold text-ink-700 hover:bg-ink-50 transition-colors shadow-soft"
+                  title="Exportar PDF"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  PDF
+                </button>
                 <button
                   onClick={() => exportarExcel(miOrden)}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-madrid-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-madrid-700 transition-colors shadow-soft"
@@ -614,6 +691,106 @@ export function ListaCentrosClient({ centros }: Props) {
           )}
         </div>
       </section>
+    </div>
+  );
+}
+
+// ─── OrigenSelector ────────────────────────────────────────────────────────────
+function OrigenSelector() {
+  const { origen, setOrigen } = useConcursilloStore();
+  const [editando, setEditando] = useState(false);
+  const [texto, setTexto] = useState("");
+  const [sugerencias, setSugerencias] = useState<
+    Array<{ label: string; lat: number; lng: number }>
+  >([]);
+  const [buscando, setBuscando] = useState(false);
+
+  const buscarSugerencias = useCallback(async (val: string) => {
+    setTexto(val);
+    if (val.length < 3) {
+      setSugerencias([]);
+      return;
+    }
+    setBuscando(true);
+    try {
+      const url =
+        "https://photon.komoot.io/api/?q=" +
+        encodeURIComponent(val + ", Madrid, España") +
+        "&lang=es&limit=5";
+      const res = await fetch(url);
+      const json = await res.json();
+      const items = (json.features ?? []).map(
+        (f: { properties: Record<string, string>; geometry: { coordinates: [number, number] } }) => ({
+          label: [f.properties.name, f.properties.street, f.properties.housenumber, f.properties.city]
+            .filter(Boolean)
+            .join(", "),
+          lat: f.geometry.coordinates[1],
+          lng: f.geometry.coordinates[0],
+        })
+      );
+      setSugerencias(items);
+    } catch {
+      setSugerencias([]);
+    } finally {
+      setBuscando(false);
+    }
+  }, []);
+
+  const seleccionar = (item: { label: string; lat: number; lng: number }) => {
+    setOrigen({ label: item.label, lat: item.lat, lng: item.lng });
+    setTexto(item.label);
+    setSugerencias([]);
+    setEditando(false);
+  };
+
+  if (!editando && origen) {
+    return (
+      <div className="flex items-center justify-between rounded-lg bg-ink-50 border border-ink-200 px-3 py-2">
+        <div className="flex items-center gap-2 text-sm text-ink-700">
+          <Navigation className="h-4 w-4 text-madrid-600" />
+          <span className="text-xs text-ink-500">Origen:</span>{" "}
+          <span className="font-medium">{origen.label}</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setEditando(true);
+            setTexto(origen.label);
+          }}
+          className="text-xs text-madrid-600 hover:underline"
+        >
+          Cambiar origen
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative rounded-lg bg-ink-50 border border-ink-200 px-3 py-2">
+      <div className="flex items-center gap-2">
+        <Navigation className="h-4 w-4 text-madrid-600 shrink-0" />
+        <input
+          type="text"
+          value={texto}
+          onChange={(e) => buscarSugerencias(e.target.value)}
+          placeholder="Escribe un origen para calcular distancias…"
+          className="flex-1 bg-transparent text-sm placeholder:text-ink-400 focus:outline-none"
+        />
+        {buscando && <span className="text-xs text-ink-400">Buscando…</span>}
+      </div>
+      {sugerencias.length > 0 && (
+        <div className="absolute z-10 left-0 right-0 mt-1 bg-white border border-ink-200 rounded-lg shadow-lg">
+          {sugerencias.map((s, i) => (
+            <button
+              key={i}
+              onClick={() => seleccionar(s)}
+              className="w-full text-left px-3 py-2 text-sm hover:bg-madrid-50 transition-colors"
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
