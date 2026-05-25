@@ -26,12 +26,16 @@ import {
   ChevronDown,
   Download,
   X,
-  MapPin,
-  ExternalLink,
+  Cloud,
+  CloudOff,
+  LogIn,
 } from "lucide-react";
 import { useConcursilloStore } from "@/lib/store/concursillo";
 import type { Centro } from "@/lib/types";
 import { cn, normalizar, formatNumber } from "@/lib/utils";
+import { syncListaToCloud, loadListaFromCloud } from "@/lib/concursilloSync";
+import { createClient } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 interface Props {
   centros: Centro[];
@@ -268,8 +272,35 @@ function ItemDisponible({ centro }: { centro: Centro }) {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export function ConcursilloClient({ centros }: Props) {
-  const { miOrden, filtros, setFiltros, reorderCentro, clearLista } =
+  const { miOrden, filtros, setFiltros, reorderCentro, clearLista, setMiOrden } =
     useConcursilloStore();
+
+  const [user, setUser] = useState<User | null>(null);
+  const [syncStatus, setSyncStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+
+  // Cargar usuario y lista de la nube al montar
+  useCallback(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data }) => {
+      setUser(data.user);
+      if (data.user && miOrden.length === 0) {
+        const cloudLista = await loadListaFromCloud();
+        if (cloudLista && cloudLista.length > 0) setMiOrden(cloudLista);
+      }
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleSync = async () => {
+    if (!user) {
+      window.location.href = "/login?next=/concursillo";
+      return;
+    }
+    setSyncStatus("saving");
+    const ok = await syncListaToCloud(miOrden);
+    setSyncStatus(ok ? "saved" : "error");
+    setTimeout(() => setSyncStatus("idle"), 3000);
+  };
 
   const dats = unique(centros.map((c) => c.dat));
   const tipos = unique(centros.map((c) => c.tipo));
@@ -459,6 +490,36 @@ export function ConcursilloClient({ centros }: Props) {
                 >
                   <Download className="h-3.5 w-3.5" />
                   Excel
+                </button>
+                <button
+                  onClick={handleSync}
+                  disabled={syncStatus === "saving"}
+                  title={user ? "Guardar en mi cuenta" : "Inicia sesión para guardar"}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors shadow-soft",
+                    syncStatus === "saved"
+                      ? "bg-green-100 text-green-700"
+                      : syncStatus === "error"
+                      ? "bg-red-100 text-red-700"
+                      : "bg-ink-100 text-ink-700 hover:bg-ink-200"
+                  )}
+                >
+                  {syncStatus === "saving" ? (
+                    <Cloud className="h-3.5 w-3.5 animate-pulse" />
+                  ) : syncStatus === "saved" ? (
+                    <Cloud className="h-3.5 w-3.5" />
+                  ) : user ? (
+                    <Cloud className="h-3.5 w-3.5" />
+                  ) : (
+                    <LogIn className="h-3.5 w-3.5" />
+                  )}
+                  {syncStatus === "saved"
+                    ? "Guardado"
+                    : syncStatus === "error"
+                    ? "Error"
+                    : user
+                    ? "Guardar"
+                    : "Acceder"}
                 </button>
                 <button
                   onClick={clearLista}

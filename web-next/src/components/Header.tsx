@@ -24,7 +24,7 @@ export function Header({ updatedAt }: HeaderProps = {}) {
         </div>
         <nav className="hidden md:flex items-center gap-6 text-sm text-ink-600">
           <Link href="/concursillo" className="font-semibold text-madrid-600 hover:text-madrid-700 transition-colors">
-            Concursillo
+            Lista de centros
           </Link>
           <Link href="/mapa" className="hover:text-madrid-600 transition-colors">
             Mapa

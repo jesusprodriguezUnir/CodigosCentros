@@ -33,6 +33,7 @@ interface ConcursilloState {
   moverAbajo: (codigo: string) => void;
   setOrden: (codigo: string, posicion: number) => void;
   clearLista: () => void;
+  setMiOrden: (lista: Centro[]) => void;
   setFiltros: (f: Partial<FiltrosConcursillo>) => void;
   setOrigen: (o: OrigenGeo | null) => void;
 }
@@ -102,6 +103,8 @@ export const useConcursilloStore = create<ConcursilloState>()(
         }),
 
       clearLista: () => set({ miOrden: [] }),
+
+      setMiOrden: (lista) => set({ miOrden: lista }),
 
       setFiltros: (f) =>
         set((s) => ({ filtros: { ...s.filtros, ...f } })),

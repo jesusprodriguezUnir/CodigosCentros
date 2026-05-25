@@ -42,3 +42,44 @@ export type Metricas = {
   totalVacantesHistorico: number;
   generadoDesde: string;
 };
+
+// ── Semana 3: comunidad ──────────────────────────────────────
+
+export type UserRole = "user" | "admin";
+
+export type Profile = {
+  id: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  role: UserRole;
+  created_at: string;
+};
+
+export type Review = {
+  id: string;
+  centro_codigo: string;
+  user_id: string;
+  rating: number;
+  body: string;
+  created_at: string;
+  updated_at: string;
+  hidden_at: string | null;
+  profile?: Pick<Profile, "display_name" | "avatar_url">;
+};
+
+export type Comment = {
+  id: string;
+  review_id: string;
+  user_id: string;
+  body: string;
+  created_at: string;
+  hidden_at: string | null;
+  profile?: Pick<Profile, "display_name" | "avatar_url">;
+};
+
+export type ListaConcursillo = {
+  user_id: string;
+  slug: string;
+  payload: Centro[];
+  updated_at: string;
+};

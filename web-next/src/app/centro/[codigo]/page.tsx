@@ -6,6 +6,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CalculadoraRuta } from "@/components/CalculadoraRuta";
 import { MapaCentro } from "@/components/MapaCentroWrapper";
+import { Reseñas } from "@/components/Reseñas";
 import { createServerClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
@@ -180,6 +181,9 @@ export default async function Page({ params }: { params: Params }) {
                 nombreCentro={c.nombre as string}
               />
             )}
+
+            {/* Reseñas */}
+            <Reseñas centroCodigo={codigo} />
           </div>
 
           {/* Columna de mapa */}
