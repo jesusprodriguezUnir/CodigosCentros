@@ -33,11 +33,11 @@ export default function Page() {
           <ul>
             <li>
               <strong>Correo electrónico</strong>: si decides crear una cuenta (opcional),
-              para enviarte el enlace de acceso y asociar tu lista del concursillo y
+              para enviarte el enlace de acceso y asociar tu lista de centros y
               reseñas.
             </li>
             <li>
-              <strong>Lista del concursillo</strong>: si la guardas en tu cuenta, se
+              <strong>Lista de centros</strong>: si la guardas en tu cuenta, se
               almacena en nuestra base de datos asociada a tu correo.
             </li>
             <li>

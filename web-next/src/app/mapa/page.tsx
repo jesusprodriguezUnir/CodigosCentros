@@ -13,14 +13,14 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
-const SELECT_FIELDS = "codigo, nombre, municipio, dat, tipo, jornada, bilingue, vacantes, lat, lng";
+const SELECT_FIELDS = "codigo, nombre, municipio, distrito, dat, tipo, jornada, bilingue, vacantes, lat, lng";
 
 export default async function Page() {
   const supabase = await createServerClient();
 
   const PAGE_SIZE = 1000;
   let allRows: {
-    codigo: string; nombre: string; municipio: string;
+    codigo: string; nombre: string; municipio: string; distrito: string | null;
     dat: string | null; tipo: string | null; jornada: string | null;
     bilingue: boolean | null; vacantes: Record<string, number> | null;
     lat: number | null; lng: number | null;
@@ -47,6 +47,7 @@ export default async function Page() {
     };
     return {
       codigo: row.codigo, centro: row.nombre, localidad: row.municipio ?? "",
+      distrito: row.distrito ?? undefined,
       vacantes, total: Object.values(vacantes).reduce((a, b) => a + b, 0),
       dat: row.dat ?? undefined, tipo: row.tipo ?? undefined,
       jornada: row.jornada ?? undefined, bilingue: row.bilingue ?? undefined,

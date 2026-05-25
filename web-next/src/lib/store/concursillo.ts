@@ -10,6 +10,7 @@ export interface FiltrosConcursillo {
   soloConVacantes: boolean;
   soloBilingue: boolean;
   municipio: string;
+  distrito: string;
 }
 
 export interface OrigenGeo {
@@ -46,6 +47,7 @@ const FILTROS_DEFAULT: FiltrosConcursillo = {
   soloConVacantes: true,
   soloBilingue: false,
   municipio: "",
+  distrito: "",
 };
 
 export const useConcursilloStore = create<ConcursilloState>()(

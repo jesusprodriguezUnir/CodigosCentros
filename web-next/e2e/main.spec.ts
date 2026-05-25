@@ -25,9 +25,9 @@ test.describe("Ficha de centro", () => {
   });
 });
 
-test.describe("Lista de centros (/concursillo)", () => {
+test.describe("Lista de centros (/lista-centros)", () => {
   test("carga la página", async ({ page }) => {
-    await page.goto("/concursillo");
+    await page.goto("/lista-centros");
     await expect(page.locator("h1, h2").first()).toBeVisible({ timeout: 10_000 });
   });
 });
@@ -36,7 +36,7 @@ test.describe("Navegación", () => {
   test("el enlace del menú a Lista de centros funciona", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("link", { name: /Lista de centros/i }).click();
-    await expect(page).toHaveURL(/\/concursillo/);
+    await expect(page).toHaveURL(/\/lista-centros/);
   });
 
   test("el enlace del menú al Mapa funciona", async ({ page }) => {

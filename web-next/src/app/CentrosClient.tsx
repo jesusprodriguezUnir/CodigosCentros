@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Building2, MapPin, ListChecks } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
 import { Filtros, type Orden } from "@/components/Filtros";
 import { TablaCentros } from "@/components/TablaCentros";
 import type { Centro, Municipio } from "@/lib/types";
 import { normalizar, sortEs } from "@/lib/utils";
+import { getSearchIndexSync, loadSearchIndex } from "@/lib/searchIndex";
+import Fuse from "fuse.js";
 
 interface Props {
   centros: Centro[];
@@ -23,6 +25,7 @@ export function CentrosClient({
 }: Props) {
   const [texto, setTexto] = useState("");
   const [municipio, setMunicipio] = useState("");
+  const [distrito, setDistrito] = useState("");
   const [tipo, setTipo] = useState("");
   const [bilingue, setBilingue] = useState(false);
   const [orden, setOrden] = useState<Orden>("totalDesc");
@@ -33,20 +36,46 @@ export function CentrosClient({
     [centros]
   );
 
+  const distritos = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          centros
+            .filter((c) => c.localidad === "Madrid" && c.distrito)
+            .map((c) => c.distrito as string)
+        )
+      ).sort((a, b) => a.localeCompare(b, "es")),
+    [centros]
+  );
+
+  const handleMunicipio = (v: string) => {
+    setMunicipio(v);
+    if (v !== "Madrid") setDistrito("");
+  };
+
+  const [fuseCentros, setFuseCentros] = useState<Fuse<Centro> | null>(null);
+
+  useEffect(() => {
+    const fuse = new Fuse(centros, {
+      keys: ["centro", "localidad", "codigo"],
+      threshold: 0.35,
+      ignoreLocation: true,
+    });
+    setFuseCentros(fuse);
+  }, [centros]);
+
   const filtrados = useMemo(() => {
     const t = normalizar(texto.trim());
     const m = municipio;
     let result = centros;
     if (m) result = result.filter((c) => c.localidad === m);
+    if (m === "Madrid" && distrito) result = result.filter((c) => c.distrito === distrito);
     if (tipo) result = result.filter((c) => c.tipo === tipo);
     if (bilingue) result = result.filter((c) => c.bilingue === true);
-    if (t) {
-      result = result.filter(
-        (c) =>
-          normalizar(c.centro).includes(t) ||
-          normalizar(c.localidad).includes(t) ||
-          c.codigo.includes(t)
-      );
+    if (t && fuseCentros) {
+      const fuseResults = fuseCentros.search(t);
+      const fuseCodes = new Set(fuseResults.map((r) => r.item.codigo));
+      result = result.filter((c) => fuseCodes.has(c.codigo));
     }
     const v2526 = (c: Centro) =>
       (c.vacantes.c2526Rh09 ?? 0) +
@@ -75,7 +104,7 @@ export function CentrosClient({
         break;
     }
     return sorted;
-  }, [centros, texto, municipio, orden]);
+  }, [centros, texto, municipio, distrito, tipo, bilingue, orden, fuseCentros]);
 
   return (
     <main className="container py-8">
@@ -112,20 +141,24 @@ export function CentrosClient({
         <Filtros
           texto={texto}
           municipio={municipio}
+          distrito={distrito}
           tipo={tipo}
           bilingue={bilingue}
           orden={orden}
           municipios={municipios}
+          distritos={distritos}
           tipos={tipos}
           resultados={filtrados.length}
           onTexto={setTexto}
-          onMunicipio={setMunicipio}
+          onMunicipio={handleMunicipio}
+          onDistrito={setDistrito}
           onTipo={setTipo}
           onBilingue={setBilingue}
           onOrden={setOrden}
           onLimpiar={() => {
             setTexto("");
             setMunicipio("");
+            setDistrito("");
             setTipo("");
             setBilingue(false);
           }}

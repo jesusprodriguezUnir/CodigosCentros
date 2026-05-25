@@ -23,10 +23,23 @@ interface Props {
 export function MapaClient({ centros }: Props) {
   const [texto, setTexto] = useState("");
   const [dat, setDat] = useState("");
+  const [distrito, setDistrito] = useState("");
 
   const dats = useMemo(
     () =>
       Array.from(new Set(centros.map((c) => c.dat).filter(Boolean) as string[])).sort(),
+    [centros]
+  );
+
+  const distritos = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          centros
+            .filter((c) => c.localidad === "Madrid" && c.distrito)
+            .map((c) => c.distrito as string)
+        )
+      ).sort((a, b) => a.localeCompare(b, "es")),
     [centros]
   );
 
@@ -35,6 +48,9 @@ export function MapaClient({ centros }: Props) {
     return centros.filter((c) => {
       if (c.lat == null || c.lng == null) return false;
       if (dat && c.dat !== dat) return false;
+      // Distrito: solo aplica a centros de Madrid capital
+      if (distrito && c.localidad === "Madrid" && c.distrito !== distrito) return false;
+      if (distrito && c.localidad !== "Madrid") return false;
       if (
         t &&
         !normalizar(c.centro).includes(t) &&
@@ -43,7 +59,7 @@ export function MapaClient({ centros }: Props) {
         return false;
       return true;
     });
-  }, [centros, texto, dat]);
+  }, [centros, texto, dat, distrito]);
 
   return (
     <div className="flex flex-col h-[calc(100vh-120px)]">
@@ -71,6 +87,21 @@ export function MapaClient({ centros }: Props) {
             </option>
           ))}
         </select>
+        {distritos.length > 0 && (
+          <select
+            value={distrito}
+            onChange={(e) => setDistrito(e.target.value)}
+            title="Filtra centros de Madrid capital por distrito"
+            className="rounded-lg border border-ink-200 bg-white py-1.5 px-3 text-sm focus:border-madrid-600 focus:outline-none"
+          >
+            <option value="">Distrito (Madrid)</option>
+            {distritos.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+        )}
         <p className="text-xs text-ink-500 ml-auto">
           {filtrados.length.toLocaleString("es-ES")} centros con coordenadas
         </p>

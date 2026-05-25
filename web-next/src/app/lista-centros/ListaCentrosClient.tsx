@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback, useEffect, useRef } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import {
   DndContext,
@@ -54,6 +54,7 @@ async function exportarExcel(lista: Centro[]) {
     Codigo: c.codigo,
     Centro: c.centro,
     Municipio: c.localidad,
+    Distrito: c.distrito ?? "",
     DAT: c.dat ?? "",
     Tipo: c.tipo ?? "",
     Jornada: c.jornada ?? "",
@@ -66,8 +67,8 @@ async function exportarExcel(lista: Centro[]) {
   }));
   const ws = utils.json_to_sheet(filas);
   const wb = utils.book_new();
-  utils.book_append_sheet(wb, ws, "Mi Concursillo");
-  writeFile(wb, "mi-concursillo.xlsx");
+  utils.book_append_sheet(wb, ws, "Mi lista de centros");
+  writeFile(wb, "mi-lista-centros.xlsx");
 }
 
 // ─── Componente item de la lista "Mi orden" (sortable) ───────────────────────
@@ -175,7 +176,11 @@ function ItemOrden({
               {centro.centro}
             </Link>
             <p className="text-xs text-ink-500">
-              {centro.localidad} · {centro.dat ?? "Sin DAT"}
+              {centro.localidad}
+              {centro.localidad === "Madrid" && centro.distrito
+                ? ` · ${centro.distrito}`
+                : ""}{" "}
+              · {centro.dat ?? "Sin DAT"}
             </p>
           </div>
           <button
@@ -233,7 +238,11 @@ function ItemDisponible({ centro }: { centro: Centro }) {
           {centro.centro}
         </Link>
         <p className="text-xs text-ink-500">
-          {centro.localidad} · {centro.dat ?? "—"}
+          {centro.localidad}
+          {centro.localidad === "Madrid" && centro.distrito
+            ? ` · ${centro.distrito}`
+            : ""}{" "}
+          · {centro.dat ?? "—"}
         </p>
         <div className="mt-1 flex flex-wrap gap-1">
           {centro.tipo && (
@@ -271,7 +280,7 @@ function ItemDisponible({ centro }: { centro: Centro }) {
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
-export function ConcursilloClient({ centros }: Props) {
+export function ListaCentrosClient({ centros }: Props) {
   const { miOrden, filtros, setFiltros, reorderCentro, clearLista, setMiOrden } =
     useConcursilloStore();
 
@@ -293,7 +302,7 @@ export function ConcursilloClient({ centros }: Props) {
 
   const handleSync = async () => {
     if (!user) {
-      window.location.href = "/login?next=/concursillo";
+      window.location.href = "/login?next=/lista-centros";
       return;
     }
     setSyncStatus("saving");
@@ -305,6 +314,26 @@ export function ConcursilloClient({ centros }: Props) {
   const dats = unique(centros.map((c) => c.dat));
   const tipos = unique(centros.map((c) => c.tipo));
   const jornadas = unique(centros.map((c) => c.jornada));
+
+  const municipios = useMemo(
+    () => unique(centros.map((c) => c.localidad)),
+    [centros]
+  );
+
+  // Distritos de Madrid capital — derivados de los datos
+  const distritos = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          centros
+            .filter((c) => c.localidad === "Madrid" && c.distrito)
+            .map((c) => c.distrito as string)
+        )
+      ).sort((a, b) => a.localeCompare(b, "es")),
+    [centros]
+  );
+
+  const mostrarDistrito = filtros.municipio === "Madrid" && distritos.length > 0;
 
   // Centros filtrados para el panel "Disponibles"
   const disponibles = useMemo(() => {
@@ -323,6 +352,12 @@ export function ConcursilloClient({ centros }: Props) {
       }
       if (filtros.municipio && c.localidad !== filtros.municipio) return false;
       if (
+        filtros.municipio === "Madrid" &&
+        filtros.distrito &&
+        c.distrito !== filtros.distrito
+      )
+        return false;
+      if (
         t &&
         !normalizar(c.centro).includes(t) &&
         !normalizar(c.localidad).includes(t) &&
@@ -332,11 +367,6 @@ export function ConcursilloClient({ centros }: Props) {
       return true;
     });
   }, [centros, filtros]);
-
-  const municipios = useMemo(
-    () => unique(centros.map((c) => c.localidad)),
-    [centros]
-  );
 
   // DnD
   const sensors = useSensors(
@@ -354,6 +384,15 @@ export function ConcursilloClient({ centros }: Props) {
     },
     [miOrden, reorderCentro]
   );
+
+  // Al cambiar municipio: si ya no es Madrid, limpiar distrito
+  const handleMunicipioChange = (v: string) => {
+    if (v !== "Madrid") {
+      setFiltros({ municipio: v, distrito: "" });
+    } else {
+      setFiltros({ municipio: v });
+    }
+  };
 
   return (
     <div className="grid gap-4 lg:grid-cols-12">
@@ -397,8 +436,17 @@ export function ConcursilloClient({ centros }: Props) {
               label="Municipio"
               value={filtros.municipio}
               options={municipios}
-              onChange={(v) => setFiltros({ municipio: v })}
+              onChange={handleMunicipioChange}
             />
+
+            {mostrarDistrito && (
+              <FiltroSelect
+                label="Distrito de Madrid"
+                value={filtros.distrito}
+                options={distritos}
+                onChange={(v) => setFiltros({ distrito: v })}
+              />
+            )}
 
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -431,6 +479,7 @@ export function ConcursilloClient({ centros }: Props) {
                   soloConVacantes: true,
                   soloBilingue: false,
                   municipio: "",
+                  distrito: "",
                 })
               }
               className="text-xs text-madrid-600 hover:underline"

@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { createServerClient } from "@/lib/supabase/server";
-import { ConcursilloClient } from "./ConcursilloClient";
+import { ListaCentrosClient } from "./ListaCentrosClient";
 import type { Centro } from "@/lib/types";
 
 export const metadata: Metadata = {
-  title: "Concursillo · Prepara tu petición de destinos | Centros CM",
+  title: "Mi lista de centros · Prepara tu petición de destinos | Centros CM",
   description:
     "Ordena los centros educativos de Madrid según tus preferencias. Filtros por DAT, tipo, jornada y bilingüismo. Exporta tu lista a Excel.",
 };
@@ -17,6 +17,7 @@ type SupabaseCentro = {
   codigo: string;
   nombre: string;
   municipio: string;
+  distrito: string | null;
   dat: string | null;
   tipo: string | null;
   titularidad: string | null;
@@ -31,7 +32,7 @@ type SupabaseCentro = {
 };
 
 const SELECT_FIELDS =
-  "codigo, nombre, municipio, dat, tipo, titularidad, jornada, bilingue, idiomas_bilingue, etapa, vacantes, updated_at, lat, lng";
+  "codigo, nombre, municipio, distrito, dat, tipo, titularidad, jornada, bilingue, idiomas_bilingue, etapa, vacantes, updated_at, lat, lng";
 
 export default async function Page() {
   const supabase = await createServerClient();
@@ -66,6 +67,7 @@ export default async function Page() {
       codigo: row.codigo,
       centro: row.nombre,
       localidad: row.municipio ?? "",
+      distrito: row.distrito ?? undefined,
       vacantes,
       total:
         vacantes.c2223 +
@@ -93,7 +95,7 @@ export default async function Page() {
       <main className="container py-6">
         <div className="mb-6">
           <h2 className="font-display text-3xl font-bold text-ink-900">
-            Concursillo
+            Mi lista de centros
           </h2>
           <p className="mt-1 text-ink-600">
             Ordena tus destinos preferidos, filtra por DAT/tipo/jornada y exporta
@@ -103,7 +105,7 @@ export default async function Page() {
             </span>
           </p>
         </div>
-        <ConcursilloClient centros={centros} />
+        <ListaCentrosClient centros={centros} />
       </main>
       <Footer />
     </>

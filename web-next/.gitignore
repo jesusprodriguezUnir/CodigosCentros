@@ -4,3 +4,6 @@ out
 .vercel
 .env*
 next-env.d.ts
+tsconfig.tsbuildinfo
+.agents/
+skills-lock.json

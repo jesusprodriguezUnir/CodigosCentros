@@ -11,6 +11,7 @@ type SupabaseCentro = {
   codigo: string;
   nombre: string;
   municipio: string;
+  distrito: string | null;
   dat: string | null;
   tipo: string | null;
   titularidad: string | null;
@@ -45,6 +46,7 @@ function mapCentro(row: SupabaseCentro): Centro {
     codigo: row.codigo,
     centro: row.nombre,
     localidad: row.municipio ?? "",
+    distrito: row.distrito ?? undefined,
     vacantes,
     total,
     dat: row.dat ?? undefined,
@@ -65,7 +67,7 @@ export default async function Page() {
 
   // Supabase PostgREST tiene max-rows=1000; paginamos para obtener todos
   const SELECT_FIELDS =
-    "codigo, nombre, municipio, dat, tipo, titularidad, jornada, bilingue, idiomas_bilingue, etapa, vacantes, updated_at, lat, lng";
+    "codigo, nombre, municipio, distrito, dat, tipo, titularidad, jornada, bilingue, idiomas_bilingue, etapa, vacantes, updated_at, lat, lng";
   const PAGE_SIZE = 1000;
   let allRows: SupabaseCentro[] = [];
   let page = 0;

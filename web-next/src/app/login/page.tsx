@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Iniciar sesión · Centros CM",
-  description: "Accede a tu cuenta para guardar tu lista del concursillo y publicar reseñas.",
+  description: "Accede a tu cuenta para guardar tu lista de centros y publicar reseñas.",
 };
 
 export default async function Page({
@@ -33,7 +33,7 @@ export default async function Page({
               Iniciar sesión
             </h1>
             <p className="text-sm text-ink-600 text-center mb-6">
-              Guarda tu lista del concursillo y publica reseñas de centros.
+              Guarda tu lista de centros y publica reseñas.
             </p>
 
             {params.error === "auth" && (
