@@ -7,7 +7,7 @@ export interface GeoResult {
 export async function geocodificar(texto: string, signal?: AbortSignal): Promise<GeoResult[]> {
   const url = new URL("https://photon.komoot.io/api/");
   url.searchParams.set("q", `${texto}, Madrid, España`);
-  url.searchParams.set("lang", "es");
+  // url.searchParams.set("lang", "es"); // Photon ya no soporta el idioma 'es' y lanza error
   url.searchParams.set("limit", "5");
 
   const res = await fetch(url.toString(), { signal });
