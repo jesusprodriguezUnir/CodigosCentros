@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { GraduationCap } from "lucide-react";
 
 interface HeaderProps {
@@ -22,6 +23,13 @@ export function Header({ updatedAt }: HeaderProps = {}) {
           </div>
         </div>
         <nav className="hidden md:flex items-center gap-6 text-sm text-ink-600">
+          <Link href="/concursillo" className="font-semibold text-madrid-600 hover:text-madrid-700 transition-colors">
+            Concursillo
+          </Link>
+          <Link href="/mapa" className="hover:text-madrid-600 transition-colors">
+            Mapa
+          </Link>
+          <span className="text-ink-300">·</span>
           <a
             href="https://www.comunidad.madrid/educacion/buscador-centros-educativos"
             target="_blank"
@@ -30,8 +38,6 @@ export function Header({ updatedAt }: HeaderProps = {}) {
           >
             Fuente oficial
           </a>
-          <span className="text-ink-300">·</span>
-          <span>Datos cursos 22/23 → 25/26</span>
         </nav>
       </div>
       {updatedAt && (

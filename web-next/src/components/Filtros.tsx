@@ -9,11 +9,16 @@ export type Orden = "totalDesc" | "totalAsc" | "centroAsc" | "localidadAsc" | "v
 type Props = {
   texto: string;
   municipio: string;
+  tipo: string;
+  bilingue: boolean;
   orden: Orden;
   municipios: Municipio[];
+  tipos: string[];
   resultados: number;
   onTexto: (v: string) => void;
   onMunicipio: (v: string) => void;
+  onTipo: (v: string) => void;
+  onBilingue: (v: boolean) => void;
   onOrden: (v: Orden) => void;
   onLimpiar: () => void;
 };
@@ -21,20 +26,25 @@ type Props = {
 export function Filtros({
   texto,
   municipio,
+  tipo,
+  bilingue,
   orden,
   municipios,
+  tipos,
   resultados,
   onTexto,
   onMunicipio,
+  onTipo,
+  onBilingue,
   onOrden,
   onLimpiar,
 }: Props) {
-  const hayFiltros = Boolean(texto || municipio);
+  const hayFiltros = Boolean(texto || municipio || tipo || bilingue);
 
   return (
     <section className="rounded-xl border border-ink-200 bg-white p-5 shadow-soft">
       <div className="grid gap-4 md:grid-cols-12">
-        <div className="md:col-span-6 relative">
+        <div className="md:col-span-4 relative">
           <label className="text-[11px] font-semibold uppercase tracking-wider text-ink-500">
             Buscar centro o código
           </label>
@@ -50,7 +60,7 @@ export function Filtros({
           </div>
         </div>
 
-        <div className="md:col-span-4">
+        <div className="md:col-span-3">
           <label className="text-[11px] font-semibold uppercase tracking-wider text-ink-500">
             Municipio
           </label>
@@ -69,6 +79,36 @@ export function Filtros({
               ))}
             </select>
           </div>
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="text-[11px] font-semibold uppercase tracking-wider text-ink-500">
+            Tipo
+          </label>
+          <select
+            value={tipo}
+            onChange={(e) => onTipo(e.target.value)}
+            className="mt-1 w-full appearance-none rounded-lg border border-ink-200 bg-white py-2.5 px-3 text-sm focus:border-madrid-600 focus:outline-none focus:ring-4 focus:ring-madrid-600/15"
+          >
+            <option value="">Todos</option>
+            {tipos.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="md:col-span-1 flex flex-col justify-end">
+          <label className="flex cursor-pointer items-center gap-2 pb-2.5 text-sm">
+            <input
+              type="checkbox"
+              checked={bilingue}
+              onChange={(e) => onBilingue(e.target.checked)}
+              className="accent-madrid-600"
+            />
+            Solo bilingüe
+          </label>
         </div>
 
         <div className="md:col-span-2">

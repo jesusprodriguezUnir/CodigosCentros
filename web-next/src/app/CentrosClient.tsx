@@ -23,13 +23,23 @@ export function CentrosClient({
 }: Props) {
   const [texto, setTexto] = useState("");
   const [municipio, setMunicipio] = useState("");
+  const [tipo, setTipo] = useState("");
+  const [bilingue, setBilingue] = useState(false);
   const [orden, setOrden] = useState<Orden>("totalDesc");
+
+  const tipos = useMemo(
+    () =>
+      Array.from(new Set(centros.map((c) => c.tipo).filter(Boolean) as string[])).sort(),
+    [centros]
+  );
 
   const filtrados = useMemo(() => {
     const t = normalizar(texto.trim());
     const m = municipio;
     let result = centros;
     if (m) result = result.filter((c) => c.localidad === m);
+    if (tipo) result = result.filter((c) => c.tipo === tipo);
+    if (bilingue) result = result.filter((c) => c.bilingue === true);
     if (t) {
       result = result.filter(
         (c) =>
@@ -102,15 +112,22 @@ export function CentrosClient({
         <Filtros
           texto={texto}
           municipio={municipio}
+          tipo={tipo}
+          bilingue={bilingue}
           orden={orden}
           municipios={municipios}
+          tipos={tipos}
           resultados={filtrados.length}
           onTexto={setTexto}
           onMunicipio={setMunicipio}
+          onTipo={setTipo}
+          onBilingue={setBilingue}
           onOrden={setOrden}
           onLimpiar={() => {
             setTexto("");
             setMunicipio("");
+            setTipo("");
+            setBilingue(false);
           }}
         />
       </div>

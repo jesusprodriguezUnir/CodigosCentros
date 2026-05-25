@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import type { Centro } from "@/lib/types";
@@ -107,7 +108,13 @@ function FilaCentro({
           )}
         </td>
         <td className="py-3 pr-4 align-top">
-          <p className="font-medium text-ink-900">{centro.centro}</p>
+          <Link
+            href={`/centro/${centro.codigo}`}
+            className="font-medium text-ink-900 hover:text-madrid-600 transition-colors"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {centro.centro}
+          </Link>
           <p className="mt-0.5 text-xs text-ink-500 font-mono">{centro.codigo}</p>
         </td>
         <td className="py-3 pr-4 align-top text-ink-700">{centro.localidad}</td>

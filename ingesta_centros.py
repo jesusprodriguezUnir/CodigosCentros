@@ -182,6 +182,23 @@ def utm_a_wgs84(x_str: str, y_str: str) -> tuple[float | None, float | None]:
 # DAT por intersección geoespacial
 # ──────────────────────────────────────────────────────────────────────────────
 
+_DAT_CANON = {
+    "capital": "DAT Capital",
+    "norte":   "DAT Norte",
+    "sur":     "DAT Sur",
+    "oeste":   "DAT Oeste",
+    "este":    "DAT Este",
+}
+
+
+def _normalizar_dat(raw: str) -> str | None:
+    r = sin_acentos(raw)
+    for clave, canon in _DAT_CANON.items():
+        if clave in r:
+            return canon
+    return None
+
+
 def cargar_dat_poligonos() -> list[tuple[str, Any]]:
     """Devuelve lista de (nombre_dat, shapely_polygon)."""
     if not DAT_GEOJSON.exists():
@@ -264,8 +281,9 @@ def construir_registros(
 
         lat, lng = utm_a_wgs84(col["utm_x"].iloc[i], col["utm_y"].iloc[i])
         dat_geo = resolver_dat(lat, lng, polys)
-        dat_csv = col["dat"].iloc[i] or None
-        dat = dat_geo or dat_csv or None
+        dat_csv_raw = col["dat"].iloc[i] or None
+        dat_csv = _normalizar_dat(dat_csv_raw) if dat_csv_raw else None
+        dat = dat_geo or dat_csv or dat_csv_raw or None
 
         bilingue_raw = col["bilingue"].iloc[i].upper()
         bilingue = bilingue_raw in ("S", "SI", "SÍ", "TRUE", "1", "Y", "YES")
@@ -297,6 +315,9 @@ def construir_registros(
         }
 
         if lat is not None:
+            # Columnas float accesibles vía REST API
+            record["lat"] = lat
+            record["lng"] = lng
             # PostGIS: POINT(lng lat) en formato WKT con SRID
             record["geom"] = f"SRID=4326;POINT({lng} {lat})"
 

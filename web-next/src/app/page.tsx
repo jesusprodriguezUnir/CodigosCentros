@@ -20,6 +20,8 @@ type SupabaseCentro = {
   etapa: string[] | null;
   vacantes: Record<string, number> | null;
   updated_at: string | null;
+  lat: number | null;
+  lng: number | null;
 };
 
 function mapCentro(row: SupabaseCentro): Centro {
@@ -53,18 +55,32 @@ function mapCentro(row: SupabaseCentro): Centro {
     idiomas_bilingue: row.idiomas_bilingue ?? undefined,
     etapa: row.etapa ?? undefined,
     updated_at: row.updated_at ?? undefined,
+    lat: row.lat ?? undefined,
+    lng: row.lng ?? undefined,
   };
 }
 
 export default async function Page() {
   const supabase = await createServerClient();
 
-  const { data: rows } = await supabase
-    .from("centros")
-    .select(
-      "codigo, nombre, municipio, dat, tipo, titularidad, jornada, bilingue, idiomas_bilingue, etapa, vacantes, updated_at"
-    )
-    .order("municipio", { ascending: true });
+  // Supabase PostgREST tiene max-rows=1000; paginamos para obtener todos
+  const SELECT_FIELDS =
+    "codigo, nombre, municipio, dat, tipo, titularidad, jornada, bilingue, idiomas_bilingue, etapa, vacantes, updated_at, lat, lng";
+  const PAGE_SIZE = 1000;
+  let allRows: SupabaseCentro[] = [];
+  let page = 0;
+  while (true) {
+    const { data } = await supabase
+      .from("centros")
+      .select(SELECT_FIELDS)
+      .not("vacantes", "is", null)
+      .order("municipio", { ascending: true })
+      .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+    if (!data || data.length === 0) break;
+    allRows = allRows.concat(data as SupabaseCentro[]);
+    if (data.length < PAGE_SIZE) break;
+    page++;
+  }
 
   const { data: lastVersion } = await supabase
     .from("data_versions")
@@ -73,7 +89,7 @@ export default async function Page() {
     .limit(1)
     .maybeSingle();
 
-  const centros: Centro[] = (rows ?? []).map(mapCentro);
+  const centros: Centro[] = allRows.map(mapCentro);
 
   // Municipios únicos con conteo
   const municipioMap = new Map<string, number>();
