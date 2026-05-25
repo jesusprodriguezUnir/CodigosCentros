@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 // ─── Tipos ───────────────────────────────────────────────────────────────────
 
-type Centro = {
+export type Centro = {
   nombre: string;
   codigo: string;
   municipio: string | null;
