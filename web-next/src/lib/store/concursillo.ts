@@ -52,7 +52,7 @@ const FILTROS_DEFAULT: FiltrosConcursillo = {
 
 export const useConcursilloStore = create<ConcursilloState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       miOrden: [],
       filtros: FILTROS_DEFAULT,
       origen: null,

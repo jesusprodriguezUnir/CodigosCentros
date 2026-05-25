@@ -27,16 +27,17 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const fuseRef = useRef<Fuse<SearchIndexItem> | null>(null);
 
   useEffect(() => {
-    if (open) {
-      setQuery("");
-      setSelectedIndex(0);
-      setResults([]);
-      setLoading(true);
-      loadSearchIndex().then((fuse) => {
-        fuseRef.current = fuse;
-        setLoading(false);
-      });
-    }
+    if (!open) return;
+    // Reset visible al abrir el diálogo + cargar índice asíncronamente.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setQuery("");
+    setSelectedIndex(0);
+    setResults([]);
+    setLoading(true);
+    loadSearchIndex().then((fuse) => {
+      fuseRef.current = fuse;
+      setLoading(false);
+    });
   }, [open]);
 
   useEffect(() => {
@@ -164,7 +165,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               )}
               {!loading && query.trim() && results.length === 0 && (
                 <div className="p-8 text-center text-sm text-ink-500">
-                  No se encontraron resultados para "{query}"
+                  No se encontraron resultados para &laquo;{query}&raquo;
                 </div>
               )}
               {!loading && !query.trim() && (

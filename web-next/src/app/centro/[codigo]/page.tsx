@@ -115,7 +115,6 @@ export default async function Page({ params }: { params: Params }) {
               <CalculadoraRuta
                 destLat={c.lat as number}
                 destLng={c.lng as number}
-                nombreCentro={c.nombre as string}
               />
             )}
 

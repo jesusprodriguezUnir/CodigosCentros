@@ -71,11 +71,9 @@ function ResumenReseñas({ reviews }: { reviews: Review[] }) {
 function ItemReseña({
   review,
   currentUserId,
-  centroCodigo,
 }: {
   review: Review;
   currentUserId: string | null;
-  centroCodigo: string;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -258,6 +256,10 @@ export function Reseñas({ centroCodigo }: Props) {
   );
 
   useEffect(() => {
+    // Carga inicial de reseñas + usuario al montar / cambiar de centro.
+    // No incluimos loadReviews ni supabase.auth en deps a propósito: reiniciaríamos
+    // la carga en cada render y loadReviews cambia con page (paginación).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadReviews(true);
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -335,7 +337,6 @@ export function Reseñas({ centroCodigo }: Props) {
               key={r.id}
               review={r}
               currentUserId={user?.id ?? null}
-              centroCodigo={centroCodigo}
             />
           ))}
           {hasMore && (

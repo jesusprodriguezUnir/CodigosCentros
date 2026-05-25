@@ -63,7 +63,7 @@ export default function Page() {
 
           <h2>4. Limitación de responsabilidad</h2>
           <p>
-            El servicio se ofrece "tal cual". No nos responsabilizamos de decisiones
+            El servicio se ofrece &laquo;tal cual&raquo;. No nos responsabilizamos de decisiones
             tomadas sobre la base de los datos aquí mostrados. Los tiempos de
             desplazamiento son estimaciones y pueden no reflejar las condiciones reales
             del tráfico.

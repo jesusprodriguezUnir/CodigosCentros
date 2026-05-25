@@ -66,8 +66,10 @@ export function Filtros({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Carga del índice (síncrona si ya está en memoria, async si no).
     const existing = getSearchIndexSync();
     if (existing) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFuseInstance(existing);
     } else {
       loadSearchIndex().then((fuse) => setFuseInstance(fuse));

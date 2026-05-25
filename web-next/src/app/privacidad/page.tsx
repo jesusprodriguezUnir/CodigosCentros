@@ -68,7 +68,7 @@ export default function Page() {
           <h2>5. Derechos</h2>
           <p>
             Tienes derecho a acceder, rectificar, suprimir y portar tus datos. Escríbenos
-            al correo de contacto con asunto "Protección de datos".
+            al correo de contacto con asunto &laquo;Protección de datos&raquo;.
           </p>
 
           <h2>6. Terceros</h2>

@@ -60,13 +60,11 @@ function FlagCard({ flag }: { flag: FlagRow }) {
   const toggleHide = () =>
     startTransition(async () => {
       if (isReview) {
-        isHidden
-          ? await unhideReview(content.id)
-          : await hideReview(content.id);
+        if (isHidden) await unhideReview(content.id);
+        else await hideReview(content.id);
       } else {
-        isHidden
-          ? await unhideComment(content.id)
-          : await hideComment(content.id);
+        if (isHidden) await unhideComment(content.id);
+        else await hideComment(content.id);
       }
     });
 
@@ -103,7 +101,7 @@ function FlagCard({ flag }: { flag: FlagRow }) {
         <Badge hidden={isHidden} />
       </div>
 
-      <p className="text-sm text-ink-700 italic">"{content.body}"</p>
+      <p className="text-sm text-ink-700 italic">&laquo;{content.body}&raquo;</p>
 
       <div className="flex items-center gap-2 text-xs text-ink-400">
         <span>Autor: <strong className="text-ink-700">{authorName}</strong></span>

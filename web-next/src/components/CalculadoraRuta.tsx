@@ -6,7 +6,6 @@ import { Navigation, Car, Clock, AlertCircle, Loader2, ExternalLink } from "luci
 interface Props {
   destLat: number;
   destLng: number;
-  nombreCentro: string;
 }
 
 interface GeoResult {
@@ -68,7 +67,7 @@ function formatDistancia(metros: number): string {
   return `${Math.round(metros)} m`;
 }
 
-export function CalculadoraRuta({ destLat, destLng, nombreCentro }: Props) {
+export function CalculadoraRuta({ destLat, destLng }: Props) {
   const [texto, setTexto] = useState("");
   const [sugerencias, setSugerencias] = useState<GeoResult[]>([]);
   const [origenSel, setOrigenSel] = useState<GeoResult | null>(null);

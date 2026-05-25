@@ -27,10 +27,8 @@ import {
   Download,
   X,
   Cloud,
-  CloudOff,
   LogIn,
   Navigation,
-  MapPin,
 } from "lucide-react";
 import { useConcursilloStore } from "@/lib/store/concursillo";
 import type { Centro } from "@/lib/types";

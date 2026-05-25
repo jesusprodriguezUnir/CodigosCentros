@@ -68,16 +68,15 @@ function CentrosClientInner({
     if (v !== "Madrid") setDistrito("");
   };
 
-  const [fuseCentros, setFuseCentros] = useState<Fuse<Centro> | null>(null);
-
-  useEffect(() => {
-    const fuse = new Fuse(centros, {
-      keys: ["centro", "localidad", "codigo"],
-      threshold: 0.35,
-      ignoreLocation: true,
-    });
-    setFuseCentros(fuse);
-  }, [centros]);
+  const fuseCentros = useMemo(
+    () =>
+      new Fuse(centros, {
+        keys: ["centro", "localidad", "codigo"],
+        threshold: 0.35,
+        ignoreLocation: true,
+      }),
+    [centros]
+  );
 
   const filtrados = useMemo(() => {
     const t = normalizar(texto.trim());
