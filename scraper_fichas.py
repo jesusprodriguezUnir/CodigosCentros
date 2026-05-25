@@ -447,6 +447,19 @@ def parsear_ficha(html: str, codigo: str) -> dict[str, Any]:
     # `jornada` es un campo ya existente en `centros`; si la ficha aporta valor
     # y la columna está vacía, lo añadimos a un dict aparte de discrepancias.
     registro["_jornada_ficha"] = jornada_scrap  # consumido por reporte; no se sube
+
+    # Derivar bilingue / idiomas_bilingue desde opciones_linguisticas
+    idiomas: list[str] = []
+    if opciones_ling:
+        if opciones_ling.get("bilingue_es_en") or opciones_ling.get("british_council"):
+            idiomas.append("Inglés")
+        if opciones_ling.get("seccion_frances"):
+            idiomas.append("Francés")
+        if opciones_ling.get("seccion_aleman"):
+            idiomas.append("Alemán")
+    registro["bilingue"] = bool(idiomas)
+    registro["idiomas_bilingue"] = idiomas if idiomas else None
+
     return registro
 
 
