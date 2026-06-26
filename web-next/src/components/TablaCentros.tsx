@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ChevronDown, ChevronRight, Plus, Check, SearchX } from "lucide-react";
 import type { Centro } from "@/lib/types";
 import { cn, formatNumber } from "@/lib/utils";
+import { delta2526vs2425, vacantes2526 } from "@/lib/centroMetrics";
 import { Sparkline } from "./Sparkline";
 import { useConcursilloStore } from "@/lib/store/concursillo";
 
@@ -24,7 +25,7 @@ export function TablaCentros({ centros, mostrarDistancia = false, onLimpiar }: P
 
   const mostrar = centros.slice(0, visible);
   const haymas = visible < centros.length;
-  const colSpan = mostrarDistancia ? 11 : 10;
+  const colSpan = mostrarDistancia ? 12 : 11;
 
   if (centros.length === 0) {
     return (
@@ -65,6 +66,7 @@ export function TablaCentros({ centros, mostrarDistancia = false, onLimpiar }: P
               <th className="py-3 pr-4 font-semibold text-right hidden sm:table-cell">23/24</th>
               <th className="py-3 pr-4 font-semibold text-right hidden sm:table-cell">24/25</th>
               <th className="py-3 pr-4 font-semibold text-right">25/26</th>
+              <th className="py-3 pr-4 font-semibold text-right hidden md:table-cell">Δ 25/26</th>
               <th className="py-3 pr-4 font-semibold text-right hidden sm:table-cell">Total</th>
               <th className="py-3 pr-4 font-semibold text-center">Tendencia</th>
               <th className="w-10 py-3 pr-4" />{/* Lista action */}
@@ -72,14 +74,15 @@ export function TablaCentros({ centros, mostrarDistancia = false, onLimpiar }: P
           </thead>
           <tbody className="divide-y divide-ink-100">
             {mostrar.map((c) => {
-              const v2526 =
-                c.vacantes.c2526Rh09 + c.vacantes.c2526AnexoI + c.vacantes.c2526AnexoVia;
+              const v2526 = vacantes2526(c.vacantes);
+              const delta = delta2526vs2425(c);
               const expandido = abierto === c.codigo;
               return (
                 <FilaCentro
                   key={c.codigo}
                   centro={c}
                   v2526={v2526}
+                  delta={delta}
                   expandido={expandido}
                   onToggle={() => setAbierto(expandido ? null : c.codigo)}
                   mostrarDistancia={mostrarDistancia}
@@ -112,6 +115,7 @@ export function TablaCentros({ centros, mostrarDistancia = false, onLimpiar }: P
 function FilaCentro({
   centro,
   v2526,
+  delta,
   expandido,
   onToggle,
   mostrarDistancia,
@@ -119,6 +123,7 @@ function FilaCentro({
 }: {
   centro: CentroEnTabla;
   v2526: number;
+  delta: number;
   expandido: boolean;
   onToggle: () => void;
   mostrarDistancia: boolean;
@@ -194,6 +199,20 @@ function FilaCentro({
             )}
           >
             {v2526}
+          </span>
+        </td>
+        <td className="hidden md:table-cell py-3 pr-4 align-top text-right tabular-nums">
+          <span
+            className={cn(
+              "inline-flex min-w-[3rem] justify-center rounded-md px-2 py-0.5 text-xs font-semibold",
+              delta > 0
+                ? "bg-emerald-50 text-emerald-700"
+                : delta < 0
+                  ? "bg-amber-50 text-amber-700"
+                  : "bg-ink-100 text-ink-500"
+            )}
+          >
+            {delta > 0 ? `+${delta}` : delta}
           </span>
         </td>
         <td className="hidden sm:table-cell py-3 pr-4 align-top text-right tabular-nums font-semibold text-ink-900">

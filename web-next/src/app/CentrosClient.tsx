@@ -6,6 +6,7 @@ import { Filtros, type Orden } from "@/components/Filtros";
 import { TablaCentros } from "@/components/TablaCentros";
 import type { Centro, Municipio } from "@/lib/types";
 import { haversineKm, normalizar, sortEs } from "@/lib/utils";
+import { delta2526vs2425, vacantes2526 } from "@/lib/centroMetrics";
 import type { Origen } from "@/components/FiltroProximidad";
 import Fuse from "fuse.js";
 
@@ -28,6 +29,10 @@ function CentrosClientInner({ centros, municipios }: Props) {
   const [jornada, setJornada] = useState(searchParams.get("j") ?? "");
   const [bilingue, setBilingue] = useState(searchParams.get("b") === "1");
   const [excelencia, setExcelencia] = useState(searchParams.get("e") === "1");
+  const [minVacantes2526, setMinVacantes2526] = useState(() => {
+    const parsed = parseInt(searchParams.get("mv") ?? "0", 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+  });
   const [orden, setOrden] = useState<Orden>(
     (searchParams.get("o") as Orden) ?? "totalDesc"
   );
@@ -62,6 +67,7 @@ function CentrosClientInner({ centros, municipios }: Props) {
     if (jornada) params.set("j", jornada);
     if (bilingue) params.set("b", "1");
     if (excelencia) params.set("e", "1");
+    if (minVacantes2526 > 0) params.set("mv", String(minVacantes2526));
     if (orden !== "totalDesc") params.set("o", orden);
     if (origen) {
       params.set("lat", origen.lat.toFixed(6));
@@ -71,7 +77,7 @@ function CentrosClientInner({ centros, municipios }: Props) {
     }
     const qs = params.toString();
     router.replace(qs ? "?" + qs : window.location.pathname, { scroll: false });
-  }, [texto, municipio, distrito, tipo, jornada, bilingue, excelencia, orden, origen, radio, router]);
+  }, [texto, municipio, distrito, tipo, jornada, bilingue, excelencia, minVacantes2526, orden, origen, radio, router]);
 
   const handleOrigen = (o: Origen | null) => {
     setOrigen(o);
@@ -137,6 +143,9 @@ function CentrosClientInner({ centros, municipios }: Props) {
         return p && (p.centro_excelencia || p.aula_excelencia || p.innovacion_tecnologica || p.innovacion_desarrollo);
       });
     }
+    if (minVacantes2526 > 0) {
+      result = result.filter((c) => vacantes2526(c.vacantes) >= minVacantes2526);
+    }
     if (t && fuseCentros) {
       const fuseResults = fuseCentros.search(t);
       const fuseCodes = new Set(fuseResults.map((r) => r.item.codigo));
@@ -153,11 +162,6 @@ function CentrosClientInner({ centros, municipios }: Props) {
         .filter((c) => (c.distanciaKm ?? Infinity) <= radio);
     }
 
-    const v2526 = (c: Centro) =>
-      (c.vacantes.c2526Rh09 ?? 0) +
-      (c.vacantes.c2526AnexoI ?? 0) +
-      (c.vacantes.c2526AnexoVia ?? 0);
-
     const sorted = [...result];
     switch (orden) {
       case "totalDesc":
@@ -167,7 +171,10 @@ function CentrosClientInner({ centros, municipios }: Props) {
         sorted.sort((a, b) => a.total - b.total);
         break;
       case "v2526Desc":
-        sorted.sort((a, b) => v2526(b) - v2526(a));
+        sorted.sort((a, b) => vacantes2526(b.vacantes) - vacantes2526(a.vacantes));
+        break;
+      case "deltaDesc":
+        sorted.sort((a, b) => delta2526vs2425(b) - delta2526vs2425(a));
         break;
       case "centroAsc":
         sorted.sort((a, b) => sortEs(a.centro, b.centro));
@@ -193,6 +200,7 @@ function CentrosClientInner({ centros, municipios }: Props) {
     jornada,
     bilingue,
     excelencia,
+    minVacantes2526,
     orden,
     origen,
     radio,
@@ -207,6 +215,7 @@ function CentrosClientInner({ centros, municipios }: Props) {
     setJornada("");
     setBilingue(false);
     setExcelencia(false);
+    setMinVacantes2526(0);
     handleOrigen(null);
   };
 
@@ -221,6 +230,7 @@ function CentrosClientInner({ centros, municipios }: Props) {
           jornada={jornada}
           bilingue={bilingue}
           excelencia={excelencia}
+          minVacantes2526={minVacantes2526}
           orden={orden}
           origen={origen}
           radio={radio}
@@ -236,6 +246,7 @@ function CentrosClientInner({ centros, municipios }: Props) {
           onJornada={setJornada}
           onBilingue={setBilingue}
           onExcelencia={setExcelencia}
+          onMinVacantes2526={setMinVacantes2526}
           onOrden={setOrden}
           onOrigen={handleOrigen}
           onRadio={setRadio}

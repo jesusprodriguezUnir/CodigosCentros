@@ -1,11 +1,13 @@
-import { Sparkles } from "lucide-react";
+import { Building2, Gauge, Sparkles, TrendingUp } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { StatPill } from "@/components/StatPill";
+import { StatCard } from "@/components/StatCard";
 import { CentrosClient } from "./CentrosClient";
 import { createServerClient } from "@/lib/supabase/server";
 import type { Centro, Municipio } from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
+import { scorePresionVacantes, vacantes2526 } from "@/lib/centroMetrics";
 
 export const revalidate = 3600; // ISR: revalidar cada hora
 
@@ -112,11 +114,30 @@ export default async function Page() {
 
   // Métricas
   const totalVacantes2526 = centros.reduce(
-    (acc, c) =>
-      acc + c.vacantes.c2526Rh09 + c.vacantes.c2526AnexoI + c.vacantes.c2526AnexoVia,
+    (acc, c) => acc + vacantes2526(c.vacantes),
     0
   );
   const totalVacantesHistorico = centros.reduce((acc, c) => acc + c.total, 0);
+  const totalVacantes2425 = centros.reduce((acc, c) => acc + c.vacantes.c2425, 0);
+  const centrosConVacantes2526 = centros.filter((c) => vacantes2526(c.vacantes) > 0).length;
+  const variacionVs2425 = totalVacantes2526 - totalVacantes2425;
+  const mediaScorePresion =
+    centros.length > 0
+      ? Math.round(
+          centros.reduce((acc, c) => acc + scorePresionVacantes(c), 0) / centros.length
+        )
+      : 0;
+  const topMunicipios = Array.from(
+    centros.reduce((acc, c) => {
+      const actual = acc.get(c.localidad) ?? { centros: 0, vacantes2526: 0 };
+      actual.centros += 1;
+      actual.vacantes2526 += vacantes2526(c.vacantes);
+      acc.set(c.localidad, actual);
+      return acc;
+    }, new Map<string, { centros: number; vacantes2526: number }>())
+  )
+    .sort((a, b) => b[1].vacantes2526 - a[1].vacantes2526)
+    .slice(0, 5);
 
   // Frescura: última versión de datos o updated_at más reciente de centros
   const updatedAt =
@@ -158,6 +179,47 @@ export default async function Page() {
           </div>
         </div>
       </div>
+      <section className="container py-5 md:py-7">
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <StatCard
+            icon={Building2}
+            label="Centros con vacantes 25/26"
+            value={centrosConVacantes2526}
+            hint={`${formatNumber(centros.length - centrosConVacantes2526)} sin vacantes`}
+          />
+          <StatCard
+            icon={TrendingUp}
+            label="Variación 25/26 vs 24/25"
+            value={variacionVs2425}
+            hint="Diferencia agregada entre cursos"
+            accent="madrid"
+          />
+          <StatCard
+            icon={Gauge}
+            label="Score medio de presión"
+            value={mediaScorePresion}
+            hint="Prioriza demanda reciente de vacantes"
+          />
+          <div className="rounded-xl border border-ink-200 bg-white p-5 shadow-soft">
+            <p className="text-xs font-semibold uppercase tracking-wider text-ink-500">
+              Top municipios por vacantes 25/26
+            </p>
+            <div className="mt-3 space-y-2 text-sm">
+              {topMunicipios.map(([municipio, data], index) => (
+                <div key={municipio} className="flex items-center justify-between gap-2">
+                  <p className="truncate text-ink-700">
+                    <span className="mr-1 text-ink-400">{index + 1}.</span>
+                    {municipio}
+                  </p>
+                  <p className="shrink-0 font-semibold tabular-nums text-madrid-700">
+                    {formatNumber(data.vacantes2526)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
       {fetchError ? (
         <main className="container py-16 text-center">
           <p className="text-ink-500 mb-2">No se pudieron cargar los datos de los centros.</p>
@@ -175,4 +237,3 @@ export default async function Page() {
     </>
   );
 }
-
