@@ -14,6 +14,7 @@ export type Orden =
   | "centroAsc"
   | "localidadAsc"
   | "v2526Desc"
+  | "deltaDesc"
   | "distAsc";
 
 type Props = {
@@ -25,6 +26,7 @@ type Props = {
   bilingue: boolean;
   excelencia: boolean;
   orden: Orden;
+  minVacantes2526: number;
   origen: Origen | null;
   radio: number;
   municipios: Municipio[];
@@ -40,6 +42,7 @@ type Props = {
   onBilingue: (v: boolean) => void;
   onExcelencia: (v: boolean) => void;
   onOrden: (v: Orden) => void;
+  onMinVacantes2526: (v: number) => void;
   onOrigen: (o: Origen | null) => void;
   onRadio: (km: number) => void;
   onLimpiar: () => void;
@@ -49,6 +52,7 @@ const ordenLabels: Record<Orden, string> = {
   totalDesc: "Total ↓",
   totalAsc: "Total ↑",
   v2526Desc: "25/26 ↓",
+  deltaDesc: "Mayor subida 25/26",
   centroAsc: "A→Z",
   localidadAsc: "Muni A→Z",
   distAsc: "Distancia ↑",
@@ -67,6 +71,7 @@ export function Filtros({
   bilingue,
   excelencia,
   orden,
+  minVacantes2526,
   origen,
   radio,
   municipios,
@@ -82,12 +87,21 @@ export function Filtros({
   onBilingue,
   onExcelencia,
   onOrden,
+  onMinVacantes2526,
   onOrigen,
   onRadio,
   onLimpiar,
 }: Props) {
   const hayFiltros = Boolean(
-    texto || municipio || distrito || tipo || jornada || bilingue || excelencia || origen
+    texto ||
+      municipio ||
+      distrito ||
+      tipo ||
+      jornada ||
+      bilingue ||
+      excelencia ||
+      origen ||
+      minVacantes2526 > 0
   );
   const mostrarDistrito = municipio === "Madrid" && distritos.length > 0;
 
@@ -259,6 +273,20 @@ export function Filtros({
           </select>
         </Campo>
 
+        <Campo label="Vacantes 25/26 mín.">
+          <select
+            value={String(minVacantes2526)}
+            onChange={(e) => onMinVacantes2526(Number(e.target.value))}
+            className="w-full appearance-none rounded-lg border border-ink-200 bg-white py-1.5 px-2.5 text-sm focus:border-madrid-600 focus:outline-none focus:ring-2 focus:ring-madrid-600/15"
+          >
+            <option value="0">Sin mínimo</option>
+            <option value="1">1 o más</option>
+            <option value="5">5 o más</option>
+            <option value="10">10 o más</option>
+            <option value="20">20 o más</option>
+          </select>
+        </Campo>
+
         {/* Toggles + orden */}
         <Campo label="Más filtros">
           <div className="flex flex-wrap items-center gap-2">
@@ -322,6 +350,11 @@ export function Filtros({
             {tipo && <Chip onRemove={() => onTipo("")}>{tipo}</Chip>}
             {jornada && (
               <Chip onRemove={() => onJornada("")}>Jornada: {formatJornada(jornada)}</Chip>
+            )}
+            {minVacantes2526 > 0 && (
+              <Chip onRemove={() => onMinVacantes2526(0)}>
+                Vac. 25/26 ≥ {minVacantes2526}
+              </Chip>
             )}
             {bilingue && <Chip onRemove={() => onBilingue(false)}>Bilingüe</Chip>}
             {excelencia && <Chip onRemove={() => onExcelencia(false)}>Excelencia</Chip>}

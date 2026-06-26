@@ -36,6 +36,7 @@ import { cn, normalizar, formatNumber, haversineKm } from "@/lib/utils";
 import { syncListaToCloud, loadListaFromCloud } from "@/lib/concursilloSync";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
+import { vacantes2526 } from "@/lib/centroMetrics";
 
 interface Props {
   centros: Centro[];
@@ -59,10 +60,7 @@ async function exportarExcel(lista: Centro[]) {
     Tipo: c.tipo ?? "",
     Jornada: c.jornada ?? "",
     Bilingue: c.bilingue ? "Sí" : "No",
-    Vacantes_2526:
-      (c.vacantes.c2526Rh09 ?? 0) +
-      (c.vacantes.c2526AnexoI ?? 0) +
-      (c.vacantes.c2526AnexoVia ?? 0),
+    Vacantes_2526: vacantes2526(c.vacantes),
     Total_historico: c.total,
   }));
   const ws = utils.json_to_sheet(filas);
@@ -76,7 +74,7 @@ function exportarPDF(lista: Centro[]) {
   const win = window.open("", "_blank");
   if (!win) return;
   const filas = lista.map((c, i) => {
-    const v2526 = (c.vacantes.c2526Rh09 ?? 0) + (c.vacantes.c2526AnexoI ?? 0) + (c.vacantes.c2526AnexoVia ?? 0);
+    const v2526 = vacantes2526(c.vacantes);
     const muni = c.localidad + (c.localidad === "Madrid" && c.distrito ? " · " + c.distrito : "");
     return "<tr>" +
       "<td>" + (i + 1) + "</td>" +
@@ -139,10 +137,7 @@ function ItemOrden({
     transition,
   };
 
-  const v2526 =
-    (centro.vacantes.c2526Rh09 ?? 0) +
-    (centro.vacantes.c2526AnexoI ?? 0) +
-    (centro.vacantes.c2526AnexoVia ?? 0);
+  const v2526 = vacantes2526(centro.vacantes);
 
   const distancia = useMemo(() => {
     if (!origen || centro.lat == null || centro.lng == null) return null;
@@ -284,10 +279,7 @@ function ItemOrden({
 function ItemDisponible({ centro }: { centro: Centro }) {
   const { addCentro, miOrden } = useConcursilloStore();
   const enLista = miOrden.some((x) => x.codigo === centro.codigo);
-  const v2526 =
-    (centro.vacantes.c2526Rh09 ?? 0) +
-    (centro.vacantes.c2526AnexoI ?? 0) +
-    (centro.vacantes.c2526AnexoVia ?? 0);
+  const v2526 = vacantes2526(centro.vacantes);
 
   return (
     <div className="flex items-start gap-2 rounded-lg border border-ink-100 bg-white p-3 text-sm hover:border-madrid-200 hover:bg-madrid-50/30 transition-colors">
